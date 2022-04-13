@@ -1,6 +1,6 @@
 {
   "name": "@unfocused/js-calculator",
-  "description": "Your future is in the hands of the robots. Good luck!",
+  "description": "Show me the numbers!",
   "version": "0.0.0-alpha.0",
   "private": true,
   "main": "lib/index.js",

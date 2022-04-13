@@ -1,5 +1,4 @@
-import App from './App';
+import Spawn, { Mount } from '@unfocused/spawn';
+import App from './App.ts';
 
-const run = new App({
-  parentEl: document.body
-});
+Mount(document.body, new App());
