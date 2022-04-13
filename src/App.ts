@@ -1,5 +1,5 @@
 import Spawn from '@unfocused/spawn';
-import CONSTANT from './constants';
+import CONSTANT from './util/constants';
 import Calculator from './subviews/Calculator';
 import './App.scss';
 

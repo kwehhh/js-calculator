@@ -1,4 +1,5 @@
 export default {
+  DEFAULT_VALUE: '0',
   COLOR_PALETTE: {
     WHITE_00: '#ffffff',
     GRAY_00: '#141414',
@@ -19,5 +20,12 @@ export default {
     RED_60: '#562f39', // - 6% Lightness
     RED_70: '#42242c', // - 6% Lightness
     RED_80: '#2D191E'
+  },
+  // Arithmic Operators
+  OPERATOR: {
+    ADD: '+',
+    SUBTRACT: '-',
+    MULTIPY: '*',
+    DIVIDE: '/'
   }
 }

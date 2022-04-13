@@ -18,7 +18,8 @@
     "watch": "webpack --watch"
   },
   "dependencies": {
-    "@unfocused/spawn": "git+https://github.com/UnfocusedDrive/Spawn.git#master"
+    "@unfocused/spawn": "git+https://github.com/UnfocusedDrive/Spawn.git#master",
+    "@unfocused/treasure-goblin": "git+https://github.com/UnfocusedDrive/treasure-goblin.git#master"
   },
   "devDependencies": {
     "@babel/core": "^7.12.3",
