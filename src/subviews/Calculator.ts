@@ -7,14 +7,6 @@ const { COLOR_PALETTE } = CONSTANT;
 
 const DEFAULT_VALUE = '0';
 
-// Arithmic Operators
-const OPERATOR = {
-  ADD: '+',
-  SUBTRACT: '-',
-  MULTIPY: '*',
-  DIVIDE: '/'
-};
-
 // Actions
 const ACTION = {
   CLEAR: 'clear',
@@ -123,23 +115,18 @@ const GLOBAL_INPUTS = [
  */
 class Calculator {
   constructor(props = {}) {
-    const {
-      className = '',
-      input = DEFAULT_VALUE,
-      parentEl,
-      style,
-      theme
-  } = props;
+
+    this.props = {
+      className: '',
+      input: DEFAULT_VALUE,
+      style: {},
+      theme: {},
+      ...props
+    }
 
     this.buttons = {};
-    this.input = input;
-    this.theme = this.getTheme(theme);
-
-    // Text Input Style
-    const txtStyle = {
-      textAlign: 'right',
-      overflow: 'hidden'
-    };
+    this.input = this.props.input;
+    this.theme = this.getTheme(this.props.theme);
 
     // Display Input Element
     this.inputEl = Spawn({
@@ -158,43 +145,7 @@ class Calculator {
       }
     });
 
-    this.el = Spawn({
-      parentEl,
-      className: [className, 'js-calculator'].join(' '),
-      children: Spawn({
-        children: [
-          Spawn({
-            children: this.prevInputEl,
-            style: {
-              color: this.theme.displayColor,
-              // fixed height so does not shify
-              height: 20,
-              ...txtStyle
-            }
-          }),
-          Spawn({
-            children: this.inputEl,
-            style: {
-              color: this.theme.displayColor,
-              height: 100,
-              ...txtStyle
-            }
-          })
-        ],
-        style: {
-          padding: 10
-        }
-      }),
-      style: {
-        background: this.theme.background,
-        borderRadius: 20,
-        display: 'inline-block',
-        padding: 10,
-        width: 260,
-        boxSizing: 'border-box',
-        ...style
-      }
-    });
+    this.el = this.render();
 
     this.renderBtns();
     document.addEventListener('keydown', this.handleKeyDown);
@@ -574,10 +525,6 @@ class Calculator {
     }
   }
 
-  updatePreviousInputDisplay() {
-
-  }
-
   /**
    * Render Buttons on Calculator
    */
@@ -705,6 +652,51 @@ class Calculator {
           return elContainer;
         })
       }));
+    });
+  }
+
+  render() {
+    const { className, style } = this.props;
+    // Text Input Style
+    const txtStyle = {
+      textAlign: 'right',
+      overflow: 'hidden'
+    };
+    return Spawn({
+      className: [className, 'js-calculator'].join(' '),
+      children: Spawn({
+        children: [
+          Spawn({
+            children: this.prevInputEl,
+            style: {
+              color: this.theme.displayColor,
+              // fixed height so does not shify
+              height: 20,
+              ...txtStyle
+            }
+          }),
+          Spawn({
+            children: this.inputEl,
+            style: {
+              color: this.theme.displayColor,
+              height: 100,
+              ...txtStyle
+            }
+          })
+        ],
+        style: {
+          padding: 10
+        }
+      }),
+      style: {
+        background: this.theme.background,
+        borderRadius: 20,
+        display: 'inline-block',
+        padding: 10,
+        width: 260,
+        boxSizing: 'border-box',
+        ...style
+      }
     });
   }
 }

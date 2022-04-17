@@ -1,4 +1,4 @@
-import Spawn from '@unfocused/spawn';
+import Spawn, { Mount } from '@unfocused/spawn';
 import CONSTANT from './util/constants';
 import Calculator from './subviews/Calculator';
 import './App.scss';
@@ -7,12 +7,10 @@ const { COLOR_PALETTE } = CONSTANT;
 
 export default class App {
   constructor() {
-
     const calcEl = Spawn();
+    const caclApp = new Calculator();
 
-    const caclApp = new Calculator({
-      parentEl: calcEl
-    });
+    Mount(calcEl, caclApp.el);
 
     // App Element
     const el = Spawn({
