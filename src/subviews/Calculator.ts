@@ -396,8 +396,8 @@ class Calculator {
   }
 
   calculateInput() {
-    // const { inputAsArray, inputGroups2, total } = this.getCalculatedInput();
     const { history, total } = calcUtil.computeInput(this.input);
+    debugger
 
     // Update reference of last used arithmatic
     this.renderInput(this.prevInputEl, history);
