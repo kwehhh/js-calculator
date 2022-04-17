@@ -21,7 +21,6 @@ export default {
         return total + value;
     }
   },
-
    computeInput(inputStr) {
      // need a depth count to get how many ending parens.....!!! TODO NEXT
     const nestedInputs = this.getNestedInputs(inputStr);
@@ -80,8 +79,6 @@ export default {
 
     return result;
    },
-
-
   /**
    * Get Formatted Input Chain
    * @param {*} arr - Array to compute chain
