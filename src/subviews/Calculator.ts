@@ -1,7 +1,15 @@
+// @ts-ignore
 import Spawn from '@unfocused/spawn';
 import _ from '@unfocused/treasure-goblin';
 import calcUtil from '../util/calcUtil';
 import CONSTANT from '../util/constants';
+
+export interface CalculatorProps {
+  className: string;
+  input: string;
+  style: any;
+  theme: any;
+}
 
 const { COLOR_PALETTE } = CONSTANT;
 
@@ -114,6 +122,14 @@ const GLOBAL_INPUTS = [
  * @returns {number} of current value
  */
 class Calculator {
+  buttons: any;
+  el: HTMLElement;
+  input: string;
+  inputEl: HTMLElement;
+  prevInputEl: HTMLElement;
+  props: CalculatorProps;
+  theme: any;
+
   constructor(props = {}) {
 
     this.props = {
@@ -129,35 +145,28 @@ class Calculator {
     this.theme = this.getTheme(this.props.theme);
 
     // Display Input Element
-    this.inputEl = Spawn({
-      style: {
-        whiteSpace: 'nowrap',
-        float: 'right',
-        fontSize: 20
-      }
-    });
+    this.inputEl = this.renderInputEntry();
 
     // Display Last Calculated Input Element
-    this.prevInputEl = Spawn({
-      style: {
-        fontSize: 14,
-        color: '#878889'
-      }
-    });
+    this.prevInputEl = this.renderHistoryEntry();
 
     this.el = this.render();
 
-    this.renderBtns();
-    document.addEventListener('keydown', this.handleKeyDown);
-    document.addEventListener('keyup', this.handleKeyUp);
-
-    // Re-enable when  DEMO IS ready....
-    // this.calculateInput();
-    this.updateInput(this.input);
+    // ... call from history prop....
+    this.calculateInput();
+    this.addEventListeners();
 
     return this;
   }
 
+
+  /**
+   * Add event listeners
+   */
+  addEventListeners() {
+    document.addEventListener('keydown', this.handleKeyDown);
+    document.addEventListener('keyup', this.handleKeyUp);
+  }
 
   getTheme(theme) {
     return {
@@ -325,37 +334,24 @@ class Calculator {
   }
 
   getValidInputs(value) {
-
-    const formattedValue =
-    console.log('getValidInputs', value);
     const result = [...INPUTS, ...GLOBAL_INPUTS].map(o => `${o.value}`).indexOf(`${value}`) > -1;
-    // debugger
-
-
     // Return value instead of T/F
     return result;
   }
 
   handleKeyDown = (e) => {
     const value = e.key;
-    console.log('handleKeyDown', e);
-
     this.triggerInputEvent(value);
   }
 
   handleKeyUp = (e) => {
     const value = e.key;
-    console.log('handleKeyUp', e);
-
-    // this.triggerInputEvent(value);
     const validatedInput = this.getValidInputs(value);
 
     if (validatedInput) {
       const btn = this.buttons[value];
       btn.el.style.background = btn.theme.background;
     }
-
-
   }
 
   handleBtnOnClick(value) {
@@ -372,18 +368,6 @@ class Calculator {
     if (validatedInput) {
       const btn = this.buttons[value];
       btn.el.style.background = btn.theme.hover;
-
-
-
-
-
-
-
-
-
-
-
-
 
       switch(value) {
         case 'Backspace':
@@ -528,9 +512,10 @@ class Calculator {
   /**
    * Render Buttons on Calculator
    */
-  renderBtns() {
+   renderBtns() {
+     const btnEls = [];
     _.splitToChunks(this.getButtons(), 4).forEach((group, j) => {
-      this.el.appendChild(Spawn({
+      btnEls.push(Spawn({
         children: group.map((btn, i) => {
           const { label, name, value, ...restProps } = btn;
 
@@ -613,11 +598,6 @@ class Calculator {
             tag: 'button'
           };
 
-
-          console.log('btnProps', btnProps);
-
-
-
           // Button
           const el = Spawn(btnProps);
 
@@ -653,6 +633,30 @@ class Calculator {
         })
       }));
     });
+
+    return btnEls;
+  }
+
+  renderHistoryEntry() {
+    return Spawn({
+      style: {
+        fontSize: 14,
+        color: '#878889'
+      }
+    });
+  }
+
+  renderInputEntry() {
+    const { input } = this.props;
+
+    return Spawn({
+      children: input,
+      style: {
+        whiteSpace: 'nowrap',
+        float: 'right',
+        fontSize: 20
+      }
+    });
   }
 
   render() {
@@ -664,30 +668,33 @@ class Calculator {
     };
     return Spawn({
       className: [className, 'js-calculator'].join(' '),
-      children: Spawn({
-        children: [
-          Spawn({
-            children: this.prevInputEl,
-            style: {
-              color: this.theme.displayColor,
-              // fixed height so does not shify
-              height: 20,
-              ...txtStyle
-            }
-          }),
-          Spawn({
-            children: this.inputEl,
-            style: {
-              color: this.theme.displayColor,
-              height: 100,
-              ...txtStyle
-            }
-          })
-        ],
-        style: {
-          padding: 10
-        }
-      }),
+      children: [
+        Spawn({
+          children: [
+            Spawn({
+              children: this.prevInputEl,
+              style: {
+                color: this.theme.displayColor,
+                // fixed height so does not shify
+                height: 20,
+                ...txtStyle
+              }
+            }),
+            Spawn({
+              children: this.inputEl,
+              style: {
+                color: this.theme.displayColor,
+                height: 100,
+                ...txtStyle
+              }
+            })
+          ],
+          style: {
+            padding: 10
+          }
+        }),
+        ...this.renderBtns()
+      ],
       style: {
         background: this.theme.background,
         borderRadius: 20,
