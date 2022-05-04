@@ -60,14 +60,7 @@ const calc = (input, operations) => {
       const lastItem = arr[arr.length -1];
       const more = Array.isArray(lastItem);
       if (more) {
-
         return this.getTotal(arr.slice(0,-1)) + this.getComputeChain(lastItem, cb);
-
-
-        // return [
-        //   this.getTotal(arr.slice(0,-1)),
-        //   this.getComputeChain(lastItem, cb),
-        // ];
       }
 
       return this.getTotal(arr);
@@ -103,22 +96,11 @@ const calc = (input, operations) => {
       }
 
       return null;
-
-
-
     },
     // input arr
     // return arr
     getLastChain: function(chain, level) {
       const lastItem = chain[chain.length-1];
-
-      // if (level > 0) {
-      //   debugger
-      // }
-
-
-      // console.log('getLastChain', chain, level);
-
       if (level > 0 && Array.isArray(lastItem)) {
         return this.getLastChain(lastItem, level - 1);
       }
@@ -133,12 +115,6 @@ const calc = (input, operations) => {
       const result = input.split('').reduce((acc, currentValue, i, arr) => {
         const lastChain = this.getLastChain(acc, chainLevel);
         // const formattedInput = currentValue === '(' ? [] : currentValue;
-
-
-
-
-
-
         // Create New Array from group key
         let formattedInput = currentValue;
         if (currentValue === '(') {
@@ -147,16 +123,6 @@ const calc = (input, operations) => {
         } else if (currentValue === ')') {
           // chainLevel--;
         }
-
-        // console.log('lastChain', i, lastChain, acc);
-        // console.log('groupInput', i, arr[i], acc)
-
-
-        // console.log('getInputChain', chainDepth, formattedInput, currentValue);
-        // if (currentValue === '9') {
-          // debugger
-        // }
-
 
         // Append next item
         if (lastChain === acc) {
@@ -170,19 +136,13 @@ const calc = (input, operations) => {
         lastChain.push(formattedInput);
         return acc;
       }, []);
-      // console.log('result', result);
       return result;
     },
     getTotal(arr) {
-      // const f = this.computeInputChain(arr);
-      // const a = this.getMergedValues(arr);
-      // console.log('getTotal', a, arr);
-
       let total = 0;
       let operator = OPERATOR.ADD;
 
       const mergedValues = this.getMergedValues(arr);
-      // console.log('mergedValues', mergedValues);
 
       mergedValues.forEach(node => {
           const value = Number.parseFloat(node, 10);
@@ -196,7 +156,6 @@ const calc = (input, operations) => {
       });
 
       return total;
-      // return _.toStr(total);
     },
     isOperator(value) {
       switch (value) {
@@ -213,14 +172,7 @@ const calc = (input, operations) => {
 
   const mergedInput = calcUtil.getMergedOps(input, operations);
   const chain = calcUtil.getInputChain(mergedInput);
-  const result = calcUtil.getComputeChain(chain);
-
-  console.log('calc', {result, chain, mergedInput, calcUtil})
-  // if (result !== expectedresult) {
-    // debugger
-  // }
-
-  return result;
+  return calcUtil.getComputeChain(chain);
 };
 
 // Run tests
@@ -233,5 +185,3 @@ const testResultsPassed = tests.every(test => {
 
   return result === test.output;
 });
-
-console.log('testResultsPassed', testResultsPassed);

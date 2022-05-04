@@ -2,6 +2,7 @@
 import Spawn from '@unfocused/spawn';
 import _ from '@unfocused/treasure-goblin';
 import calcUtil from '../util/calcUtil';
+import renderUtil from '../util/renderUtil';
 import CONSTANT from '../util/constants';
 
 export interface CalculatorProps {
@@ -205,7 +206,6 @@ class Calculator {
 
   // @returns {string}
   getCalculatedInput(str = this.input) {
-
     // need a depth count to get how many ending parens.....!!! TODO NEXT
     const nestedInputs = calcUtil.getNestedInputs(str);
 
@@ -266,7 +266,7 @@ class Calculator {
       return calcUtil.getTotal(t) + lastCompute;
     });
 
-    const res = {
+    return {
       input: str,
       nestedInputs,
       inputGroups,
@@ -274,14 +274,6 @@ class Calculator {
       inputAsArray: inputGroups,
       total: _.toStr(total)
     };
-
-    console.log('getCalculatedInput', {
-      // nestedInputs,
-      // inputAsArray,
-      ...res
-    });
-
-    return res;
   }
 
   /**
@@ -295,42 +287,30 @@ class Calculator {
   renderInput(displayEl, inputArray) {
     // Save reference of last used arithmatic
     displayEl.innerHTML = '';
-    // if (input !== total) {
-    if (true) {
-      inputArray.forEach(item => {
-          let el;
-          let children = item;
+    inputArray.forEach(item => {
+      let el;
+      let children = item;
 
-          if (calcUtil.isOperator(children)) {
-            // special format
-            const filter = INPUTS.filter(z => z.value === children);
-            if (filter.length && filter[0].label) {
-              console.log('filter', filter, children);
-              children = filter[0].label.toLowerCase();
-            }
+      if (calcUtil.isOperator(children)) {
+        // special format
+        const filter = INPUTS.filter(z => z.value === children);
+        if (filter.length && filter[0].label) {
+          children = filter[0].label.toLowerCase();
+        }
 
-            el = Spawn({
-              tag: 'span',
-              children,
-              style: {
-                // color: 'red'\
-                color: '#8B570D'
-              }
-            })
-            //   children: children
-            // });
-          } else {
-            el = Spawn(children);
-            // return Spawn({
-              // children: children
-            // });
+        el = Spawn({
+          tag: 'span',
+          children,
+          style: {
+            color: '#8B570D'
           }
+        })
+      } else {
+        el = Spawn(children);
+      }
 
-          // return el;
-
-          displayEl.appendChild(el);
-      })
-    }
+      displayEl.appendChild(el);
+    })
   }
 
   getValidInputs(value) {
@@ -396,11 +376,59 @@ class Calculator {
   }
 
   calculateInput() {
-    const { history, total } = calcUtil.computeInput(this.input);
-    debugger
+    const inputStr = this.input;
+    const renderer = Spawn;
+
+     // need a depth count to get how many ending parens.....!!! TODO NEXT
+     const nestedInputs = calcUtil.getNestedInputs(inputStr);
+     let lastLevel = -1;
+     const inputGroups = calcUtil.formatInputs(nestedInputs, (arr, prevArr = [], level) => {
+       // try to manage position.....
+       if (lastLevel < 0) {
+         lastLevel = level;
+       } else {
+         lastLevel = 0;
+       }
+
+       // Auto close parenthesisisisisiis
+       let open = '(';
+       if (level === 1) {
+         open = '';
+       }
+       let close = '';
+       for (let i = 0; i < lastLevel; i++) {
+         close += ')';
+       }
+
+       const res = [
+         open,
+         ...calcUtil.getInputGroups(arr),
+         close,
+         ...prevArr
+       ];
+       return res;
+     });
+     // new total is here
+     const total = _.trimLeadingZeroes(_.toStr(calcUtil.formatInputs(nestedInputs,  (arr, lastCompute = 0) => {
+       const t = calcUtil.getInputGroups(arr);
+       const j = t.map(res => {
+
+         if (calcUtil.isOperator(res)) {
+           return renderer({
+             children: res
+           });
+         } else {
+           return renderer({
+             children: res
+           });
+         }
+       });
+
+       return calcUtil.getTotal(t) + lastCompute;
+     })));
 
     // Update reference of last used arithmatic
-    this.renderInput(this.prevInputEl, history);
+    this.renderInput(this.prevInputEl, inputGroups);
     // Update Input Result
     // change to renderInput ?
     this.updateInput(total, el => el.innerHTML = calcUtil.getFormattedDisplayValue(_.toStr(total), 3));
@@ -440,14 +468,7 @@ class Calculator {
       return this.input;
     }
 
-
-
-
-
-
     // then check last group contains decimal.... then return input without value
-
-
 
     const isLastInputOp = calcUtil.isOperator(lastInput);
 
@@ -458,23 +479,17 @@ class Calculator {
     // const lastIsSameOp = calcUtil.isOperator(formattedValue) && (formattedValue === lastInput);
     const lastIsOp = calcUtil.isOperator(formattedValue) && isLastInputOp;
 
-
     let result;
     if (isLastInputDefault) {
       result = formattedValue;
-    // } else if (lastIsSameOp) {
-      // result = this.input;
     } else if (lastIsOp) {
       result = this.input.slice(0, this.input.length-1) + formattedValue;
     } else {
-
 
       // filter decimals here......
       result = this.input + formattedValue;
     }
 
-    // console.log('getFormattedInput', result, this.getCalculatedInput(result), this.input, value);
-//
     return result;
   }
 
@@ -576,15 +591,12 @@ class Calculator {
             mouseleave: (e, el) => el.style.background = background
           };
 
-
-
           const btnProps = {
             ...restProps,
             children: label || name || value,
             events,
             style: {
               background,
-              // borderRadius: 6,
               borderRadius: 10,
               borderStyle: 'none',
               color,
@@ -613,9 +625,6 @@ class Calculator {
             ]
           });
 
-
-          // console.log('renderBtns', el, elContainer, btn);
-          // this.buttonEls[btn.value] = el;
           this.buttons[btn.value] = {
             el,
             type,

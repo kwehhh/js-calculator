@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
+    "esModuleInterop": true,
     "outDir": "./test/",
     "noImplicitAny": true,
-    "module": "commonjs",
-    "target": "es5",
+    "module": "CommonJS",
+    "target": "es3",
     "allowJs": true,
     "moduleResolution": "node"
   }
