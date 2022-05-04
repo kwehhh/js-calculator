@@ -10,7 +10,8 @@
     "src"
   ],
   "scripts": {
-    "build": "npm run build-standalone && npm run build-lib",
+    "build": "npm run test && npm run build-apps",
+    "build-apps": "npm run build-standalone && npm run build-lib",
     "build-standalone": "webpack --mode=production",
     "build-lib": "webpack --mode=production --config webpack.lib.config.js",
     "start": "webpack serve --mode=development",
