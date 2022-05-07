@@ -1,6 +1,5 @@
 // Use this moving forward
 export default {
-  test: () => 'hi',
   computeValue(total, operator, value) {
     switch (operator) {
       case '-':
@@ -25,11 +24,11 @@ export default {
     return chain;
   },
   /**
-   * Get Nested Inputs
+   * Convert math input string to array trees
    * @param {string} input - input entry
-   * @returns {array} of input groups
+   * @returns {array} of input array trees
    */
-  getNestedInputs(input) {
+   getInputTreeArray(input) {
     // How deep in the chain we are
     let chainLevel = 0;
     const result = input.split('').reduce((acc, currentValue, i, arr) => {

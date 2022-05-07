@@ -81,7 +81,8 @@ export default {
 
     return chain;
   },
-  getNestedInputs: util.getNestedInputs,
+  // need a depth count to get how many ending parens.....!!! TODO NEXT
+  getNestedInputs: util.getInputTreeArray,
   getTotal(arr) {
     let total = 0;
     let operator = OPERATOR.ADD;

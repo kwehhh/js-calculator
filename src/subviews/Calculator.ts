@@ -377,55 +377,54 @@ class Calculator {
 
   calculateInput() {
     const inputStr = this.input;
-    const renderer = Spawn;
 
      // need a depth count to get how many ending parens.....!!! TODO NEXT
      const nestedInputs = calcUtil.getNestedInputs(inputStr);
      let lastLevel = -1;
-     const inputGroups = calcUtil.formatInputs(nestedInputs, (arr, prevArr = [], level) => {
-       // try to manage position.....
-       if (lastLevel < 0) {
-         lastLevel = level;
-       } else {
-         lastLevel = 0;
-       }
 
-       // Auto close parenthesisisisisiis
-       let open = '(';
-       if (level === 1) {
-         open = '';
-       }
-       let close = '';
-       for (let i = 0; i < lastLevel; i++) {
-         close += ')';
-       }
-
-       const res = [
-         open,
-         ...calcUtil.getInputGroups(arr),
-         close,
-         ...prevArr
-       ];
-       return res;
-     });
      // new total is here
      const total = _.trimLeadingZeroes(_.toStr(calcUtil.formatInputs(nestedInputs,  (arr, lastCompute = 0) => {
        const t = calcUtil.getInputGroups(arr);
-       const j = t.map(res => {
-
-         if (calcUtil.isOperator(res)) {
-           return renderer({
-             children: res
-           });
-         } else {
-           return renderer({
-             children: res
-           });
-         }
-       });
-
        return calcUtil.getTotal(t) + lastCompute;
      })));
+
+     debugger
+
+
+
+
+
+     const inputGroups = calcUtil.formatInputs(nestedInputs, (arr, prevArr = [], level) => {
+      // try to manage position.....
+      if (lastLevel < 0) {
+        lastLevel = level;
+      } else {
+        lastLevel = 0;
+      }
+
+      // Auto close parenthesisisisisiis
+      let open = '(';
+      if (level === 1) {
+        open = '';
+      }
+      let close = '';
+      for (let i = 0; i < lastLevel; i++) {
+        close += ')';
+      }
+
+      const res = [
+        open,
+        ...calcUtil.getInputGroups(arr),
+        close,
+        ...prevArr
+      ];
+      return res;
+    });
+
+
+
+
+
 
     // Update reference of last used arithmatic
     this.renderInput(this.prevInputEl, inputGroups);
