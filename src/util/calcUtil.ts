@@ -10,25 +10,7 @@ const { OPERATOR } = CONSTANT;
  */
 export default {
   computeValue: util.computeValue,
-  /**
-   * Get Formatted Input Chain
-   * @param {*} arr - Array to compute chain
-   * @param {function} formatter - callback for each chain
-   * @returns {*} value from formatter()
-   */
-   formatInputs(arr, formatter = value => value, level = 0) {
-    const lastItem = arr[arr.length -1];
-    const more = Array.isArray(lastItem);
-    if (more) {
-      return formatter(
-        arr.slice(0,-1),
-        this.formatInputs(lastItem, formatter, level + 1),
-        level + 1
-      );
-    }
-
-    return formatter(arr, [], level);
-  },
+  formatInputs: util.getFormattedInputTree,
   getFormattedDisplayValue(str) {
     const [int, dec] = str.split('.');
     let result = _.splitToChunksRight(int, 3).join(',');
