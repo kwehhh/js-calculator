@@ -37,6 +37,7 @@ function () {
         ]
       );
     });
+
     it('0+(12+(2+(3+(1+7', () => {
       const value = calcUtil.getInputTreeArray('0+(12+(2+(3+(1+7');
       // console.log(value);
@@ -65,6 +66,7 @@ function () {
         ]
       );
     });
+
     it('( 1 + (5 + 2)) + ( 1 - ( 5 - 1) )', () => {
       const value = calcUtil.getInputTreeArray('( 1 + (5 + 2)) + ( 1 - ( 5 - 1) )');
       // console.log(value);
@@ -110,6 +112,7 @@ function () {
         ]
       );
     });
+
     it('435345.11232152151', () => {
       const value = calcUtil.getInputTreeArray('435345.11232152151');
       // console.log(value);
@@ -136,43 +139,88 @@ function () {
         ]
       );
     });
+
+    it('5/4-3+1', () => {
+      const value = calcUtil.getInputTreeArray('5/4-3+1');
+      expect(value).to.deep.equal(
+        [
+          '5',
+          '/',
+          '4',
+          '-',
+          '3',
+          '+',
+          '1'
+        ]
+      );
+    });
+
+    it('45.999....+......', () => {
+      const value = calcUtil.getInputTreeArray('45.999....+......');
+      expect(value).to.deep.equal(
+        [
+          '4',
+          '5',
+          '.',
+          '9',
+          '9',
+          '9',
+          '.',
+          '.',
+          '.',
+          '.',
+          '+',
+          '.',
+          '.',
+          '.',
+          '.',
+          '.',
+          '.'
+        ]
+      );
+    });
   });
-  it('5/4-3+1', () => {
-    const value = calcUtil.getInputTreeArray('5/4-3+1');
-    expect(value).to.deep.equal(
-      [
-        '5',
-        '/',
-        '4',
-        '-',
-        '3',
-        '+',
-        '1'
-      ]
-    );
+
+  describe('getFormattedInputTree', () => {
+    it('no change', () => {
+      const value = calcUtil.getFormattedInputTree(['5', ' ', '+', ' ', '1', '0']);
+      expect(value).to.deep.equal(['5', ' ', '+', ' ', '1', '0']);
+    });
+    it('5', () => {
+      const value = calcUtil.getFormattedInputTree(
+        ['5', ' ', '+', ' ', '1', '0'],
+        (arr, next, i) => {
+          return 5;
+        }
+      );
+
+      expect(value).to.equal(5);
+    });
   });
-  it('45.999....+......', () => {
-    const value = calcUtil.getInputTreeArray('45.999....+......');
-    expect(value).to.deep.equal(
-      [
-        '4',
-        '5',
-        '.',
-        '9',
-        '9',
-        '9',
-        '.',
-        '.',
-        '.',
-        '.',
-        '+',
-        '.',
-        '.',
-        '.',
-        '.',
-        '.',
-        '.'
-      ]
-    );
+
+  describe('isOperator', () => {
+    it('true', () => {
+      const value = calcUtil.isOperator('+');
+      expect(value).to.equal(true);
+    });
+    it('false', () => {
+      const value = calcUtil.isOperator('4');
+      expect(value).to.equal(false);
+    });
+  });
+
+  it('getInputGroups', () => {
+    const value = calcUtil.getInputGroups(['4']);
+    expect(value).to.deep.equal(['4']);
+  });
+
+  it('computeValue', () => {
+    const value = calcUtil.computeValue(5, '+', 10);
+    expect(value).to.equal(15);
+  });
+
+  it('getTotal', () => {
+    const value = calcUtil.getTotal(['4', '+', '4']);
+    expect(value).to.equal(8);
   });
 });
