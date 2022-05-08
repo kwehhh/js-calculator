@@ -2,7 +2,7 @@
 import Spawn from '@unfocused/spawn';
 import _ from '@unfocused/treasure-goblin';
 import calcUtil from '../util/calcUtil';
-import renderUtil from '../util/renderUtil';
+import calcUtil2 from '../util/calcUtilv2';
 import CONSTANT from '../util/constants';
 
 export interface CalculatorProps {
@@ -214,15 +214,12 @@ class Calculator {
     const inputGroups = this.getFormattedInputGroups(nestedInputs).reduce((acc, item, i) => [...acc, item, ' '], []).slice(0, -1);
     let lastLevel = -1;
     const inputGroups2 = calcUtil.formatInputs(nestedInputs, (arr, prevArr = [], level) => {
-
-
       // try to manage position.....
       if (lastLevel < 0) {
         lastLevel = level;
       } else {
         lastLevel = 0;
       }
-
 
       // Auto close parenthesisisisisiis
       let open = '(';
@@ -234,17 +231,12 @@ class Calculator {
         close += ')';
       }
 
-
-
-
-      const res = [
+      return [
         open,
         ...calcUtil.getInputGroups(arr),
         close,
         ...prevArr
       ];
-      console.log('res', res, arr, prevArr, level, close);
-      return res;
     });
 
     // new total is here
@@ -377,23 +369,11 @@ class Calculator {
 
   calculateInput() {
     const inputStr = this.input;
+    const total = calcUtil2.calculateTotal(inputStr);
 
      // need a depth count to get how many ending parens.....!!! TODO NEXT
-     const nestedInputs = calcUtil.getNestedInputs(inputStr);
      let lastLevel = -1;
-
-     // new total is here
-     const total = _.trimLeadingZeroes(_.toStr(calcUtil.formatInputs(nestedInputs,  (arr, lastCompute = 0) => {
-       const t = calcUtil.getInputGroups(arr);
-       return calcUtil.getTotal(t) + lastCompute;
-     })));
-
-     debugger
-
-
-
-
-
+     const nestedInputs = calcUtil.getNestedInputs(inputStr);
      const inputGroups = calcUtil.formatInputs(nestedInputs, (arr, prevArr = [], level) => {
       // try to manage position.....
       if (lastLevel < 0) {
@@ -421,18 +401,15 @@ class Calculator {
       return res;
     });
 
-
-
-
-
-
     // Update reference of last used arithmatic
     this.renderInput(this.prevInputEl, inputGroups);
     // Update Input Result
     // change to renderInput ?
-    this.updateInput(total, el => el.innerHTML = calcUtil.getFormattedDisplayValue(_.toStr(total), 3));
+    this.updateInput(
+      total,
+      el => el.innerHTML = calcUtil.getFormattedDisplayValue(_.toStr(total), 3)
+    );
   }
-
 
   getFormattedInputGroups(nestedInputs) {
     return calcUtil.formatInputs(nestedInputs,  (arr, lastCompute = []) => {
@@ -453,22 +430,12 @@ class Calculator {
     const inputGroups = this.getFormattedInputGroups(nestedInputs);
     const lastInputGroup = inputGroups[inputGroups.length-1];
 
-    console.log('getFormattedInput', {
-      value,
-      formattedValue,
-      lastInput,
-      lastInputGroup,
-      nestedInputs,
-      inputGroups
-    });
-
     // Do not allow more than one decimal per input group
     if (value === '.' && lastInputGroup.indexOf('.') > -1) {
       return this.input;
     }
 
     // then check last group contains decimal.... then return input without value
-
     const isLastInputOp = calcUtil.isOperator(lastInput);
 
     // If fresh instance, replace the default DEFAULT_VALUE and setting a new num...

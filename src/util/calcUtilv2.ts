@@ -3,8 +3,23 @@ import _ from '@unfocused/treasure-goblin';
 
 const { OPERATOR } = CONSTANT;
 
-// Use this moving forward
 export default {
+  /**
+   * Calculate Total
+   * @param {string} inputStr - Input math string entry
+   * @returns {string} of calculated total
+   */
+  calculateTotal(inputStr) {
+     return _.trimLeadingZeroes(
+       _.toStr(
+         this.getFormattedInputTree
+         (this.getInputTreeArray(inputStr),
+          (arr, lastCompute = 0) => {
+            const t = this.getInputGroups(arr);
+            return this.getTotal(t) + lastCompute;
+          }
+     )));
+  },
   /**
    * Compute two values
    * @param {number} a - first value
@@ -40,7 +55,7 @@ export default {
    * @param {string} input - input entry
    * @returns {array} of input array trees
    */
-   getInputTreeArray(input) {
+  getInputTreeArray(input) {
     // How deep in the chain we are
     let chainLevel = 0;
     const result = input.split('').reduce((acc, currentValue, i, arr) => {

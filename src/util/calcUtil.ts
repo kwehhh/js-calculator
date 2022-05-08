@@ -1,14 +1,12 @@
 import _ from '@unfocused/treasure-goblin';
 import util from './calcUtilv2';
-import CONSTANT from './constants';
-
-const { OPERATOR } = CONSTANT;
 
 /**
  * Calculator Util
  * All the calculations are belong to us.
  */
 export default {
+  calculateTotal: util.calculateTotal,
   computeValue: util.computeValue,
   formatInputs: util.getFormattedInputTree,
   getFormattedDisplayValue(str) {

@@ -1,8 +1,12 @@
 import { expect } from 'chai';
 import calcUtil from '../src/util/calcUtilv2.ts';
 
-describe('calcUtil',
-function () {
+describe('calcUtil', function () {
+  it('calculateTotal', () => {
+    const value = calcUtil.calculateTotal('5 + 10');
+    expect(value).to.equal('15');
+  });
+
   describe('getInputTreeArray', () => {
     it('0', () => {
       const value = calcUtil.getInputTreeArray('0');
