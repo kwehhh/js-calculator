@@ -226,11 +226,7 @@ export default class App {
     // from : https://www.eggradients.com/category/purple-gradient
     document.body.style.backgroundColor = '#a4508b';
     document.body.style.backgroundImage = 'linear-gradient(326deg, #a4508b 0%, #5f0a87 74%)';
+    document.body.style.margin = 0;
     document.body.style.fontFamily = `'Roboto', sans-serif`;
-  }
-
-
-  render() {
-
   }
 }
