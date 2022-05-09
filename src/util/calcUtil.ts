@@ -3,7 +3,7 @@ import util from './calcUtilv2';
 
 /**
  * Calculator Util
- * All the calculations are belong to us.
+ * All your calculations are belong to us.
  */
 export default {
   calculateTotal: util.calculateTotal,

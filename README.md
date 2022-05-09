@@ -1,5 +1,5 @@
 # js-calculator
-Show me the numbers!
+All your calculations are belong to us.
 
 To run locally:
 1. `npm install`

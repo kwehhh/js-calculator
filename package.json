@@ -1,6 +1,6 @@
 {
   "name": "@unfocused/js-calculator",
-  "description": "Show me the numbers!",
+  "description": "All your calculations are belong to us.",
   "version": "0.0.0-alpha.0",
   "private": true,
   "main": "lib/index.js",

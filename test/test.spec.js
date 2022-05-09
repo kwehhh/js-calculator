@@ -77,7 +77,6 @@ describe('calcUtil', function () {
 
     it('( 1 + (5 + 2)) + ( 1 - ( 5 - 1) )', () => {
       const value = calcUtil.getInputTreeArray('( 1 + (5 + 2)) + ( 1 - ( 5 - 1) )');
-      // console.log(value);
       expect(value).to.deep.equal(
         [
           [
@@ -123,7 +122,6 @@ describe('calcUtil', function () {
 
     it('435345.11232152151', () => {
       const value = calcUtil.getInputTreeArray('435345.11232152151');
-      // console.log(value);
       expect(value).to.deep.equal(
         [
           '4',
@@ -253,7 +251,6 @@ describe('calcUtil', function () {
 
   it('getLastChain', () => {
     const value = calcUtil.getLastChain(['4', '+', '4']);
-    console.log(value)
     expect(value).to.deep.equal(['4', '+', '4']);
   });
 });

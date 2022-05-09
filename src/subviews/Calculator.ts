@@ -358,10 +358,10 @@ class Calculator {
     const inputStr = this.input;
     const total = calcUtil2.calculateTotal(inputStr);
 
-     // need a depth count to get how many ending parens.....!!! TODO NEXT
-     let lastLevel = -1;
-     const nestedInputs = calcUtil.getNestedInputs(inputStr);
-     const inputGroups = calcUtil.formatInputs(nestedInputs, (arr, prevArr = [], level) => {
+    // need a depth count to get how many ending parens.....!!! TODO NEXT
+    let lastLevel = -1;
+    const nestedInputs = calcUtil.getNestedInputs(inputStr);
+    const inputGroups = calcUtil.formatInputs(nestedInputs, (arr, prevArr = [], level) => {
       // try to manage position.....
       if (lastLevel < 0) {
         lastLevel = level;
@@ -387,8 +387,6 @@ class Calculator {
       ];
       return res;
     });
-
-    debugger
 
     // Update reference of last used arithmatic
     this.renderInput(this.prevInputEl, inputGroups);
