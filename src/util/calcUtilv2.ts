@@ -60,15 +60,15 @@ export default {
     }
   },
   /**
-   * Get Last Chain
+   * Get Last Tree Node
    * @param {array} chain - the chain
    * @param {number} level - chain level
-   * @returns {array} of last chain
+   * @returns {array} of last tree node
    */
-  getLastChain(chain, level) {
+  getLastTreeNode(chain, level) {
     const lastItem = chain[chain.length-1];
     if (level > 0 && Array.isArray(lastItem)) {
-      return this.getLastChain(lastItem, level - 1);
+      return this.getLastTreeNode(lastItem, level - 1);
     }
 
     return chain;
@@ -79,31 +79,34 @@ export default {
    * @returns {array} of input tree array
    */
   getInputTreeArray(input) {
-    // How deep in the chain we are
-    let chainLevel = 0;
-    const result = input.split('').reduce((acc, currentValue) => {
-      const lastChain = this.getLastChain(acc, chainLevel);
-      // Create New Array from group key
-      let formattedInput = currentValue;
-      if (currentValue === '(') {
-        chainLevel++;
-        formattedInput = [];
-      } else if (currentValue === ')') {
+    // How deep in the tree we are
+    let level = 0;
+    return input.split('').reduce((prevVal, curVal) => {
+      const lastNode = this.getLastTreeNode(prevVal, level);
+
+      let value = curVal;
+      // Create New Nested Array
+      if (curVal === '(') {
+        level++;
+        value = [];
+      // Go Back One Level
+      } else if (curVal === ')') {
+        level--;
+        return prevVal;
       }
 
-      // Append next item
-      if (lastChain === acc) {
+      // Append next value
+      if (lastNode === prevVal) {
         return [
-          ...acc,
-          formattedInput
+          ...prevVal,
+          value
         ];
       }
 
-      // Add last item nested arr
-      lastChain.push(formattedInput);
-      return acc;
+      // Append next value to last node
+      lastNode.push(value);
+      return prevVal;
     }, []);
-    return result;
   },
   /**
    * Format input tree array to display

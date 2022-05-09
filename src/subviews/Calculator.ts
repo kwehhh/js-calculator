@@ -207,7 +207,7 @@ class Calculator {
   // @returns {string}
   getCalculatedInput(str = this.input) {
     // need a depth count to get how many ending parens.....!!! TODO NEXT
-    const nestedInputs = calcUtil.getNestedInputs(str);
+    const nestedInputs = calcUtil2.getInputTreeArray(str);
 
     // split into separate fn....
     // !! NESTING NEEDS TO BE PRESERVED!!! for render display
@@ -360,7 +360,7 @@ class Calculator {
 
     // need a depth count to get how many ending parens.....!!! TODO NEXT
     let lastLevel = -1;
-    const nestedInputs = calcUtil.getNestedInputs(inputStr);
+    const nestedInputs = calcUtil2.getInputTreeArray(inputStr);
     const inputGroups = calcUtil.formatInputs(nestedInputs, (arr, prevArr = [], level) => {
       // try to manage position.....
       if (lastLevel < 0) {
@@ -412,7 +412,7 @@ class Calculator {
   getFormattedInput(value) {
     let formattedValue = `${value}`;
     const lastInput = this.input.slice(-1);
-    const nestedInputs = calcUtil.getNestedInputs(this.input);
+    const nestedInputs = calcUtil2.getInputTreeArray(this.input);
     // !! NESTING NEEDS TO BE PRESERVED
     const inputGroups = this.getFormattedInputGroups(nestedInputs);
     const lastInputGroup = inputGroups[inputGroups.length-1];

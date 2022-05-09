@@ -11,7 +11,7 @@ export default {
   formatInputs: util.getFormattedInputTree,
   getFormattedDisplayValue: util.formatToDisplayValue,
   getInputGroups: util.getInputGroups,
-  getLastChain: util.getLastChain,
+  getLastChain: util.getLastTreeNode,
   getNestedInputs: util.getInputTreeArray,
   getTotal: util.getTotal,
   isOperator: util.isOperator

@@ -13,14 +13,34 @@ describe('calcUtil', function () {
   });
 
   describe('getInputTreeArray', () => {
-    it('0', () => {
+    it('Single Value', () => {
       const value = calcUtil.getInputTreeArray('0');
       expect(value).to.deep.equal(['0']);
     });
 
-    it('5 + 10', () => {
-      const value = calcUtil.getInputTreeArray('5 + 10');
-      expect(value).to.deep.equal(['5', ' ', '+', ' ', '1', '0']);
+    it('Add Two Values', () => {
+      const value = calcUtil.getInputTreeArray('5+10');
+      expect(value).to.deep.equal(['5', '+', '1', '0']);
+    });
+
+    it('Nested Value', () => {
+      const value = calcUtil.getInputTreeArray('5+10-(1+1)+1');
+      expect(value).to.deep.equal(
+        [
+          '5',
+          '+',
+          '1',
+          '0',
+          '-',
+          [
+            '1',
+            '+',
+            '1'
+          ],
+          '+',
+          '1'
+        ]
+      );
     });
 
     it('45+(1250*100)/1', () => {
@@ -39,10 +59,9 @@ describe('calcUtil', function () {
             '1',
             '0',
             '0',
-            ')',
-            '/',
-            '1'
-          ]
+          ],
+          '/',
+          '1'
         ]
       );
     });
@@ -75,46 +94,28 @@ describe('calcUtil', function () {
       );
     });
 
-    it('( 1 + (5 + 2)) + ( 1 - ( 5 - 1) )', () => {
-      const value = calcUtil.getInputTreeArray('( 1 + (5 + 2)) + ( 1 - ( 5 - 1) )');
+    it('(1+(5+2))+(1-(5-1))', () => {
+      const value = calcUtil.getInputTreeArray('(1+(5+2))+(1-(5-1))');
       expect(value).to.deep.equal(
         [
           [
-            ' ',
             '1',
-            ' ',
             '+',
-            ' ',
             [
               '5',
-              ' ',
               '+',
-              ' ',
               '2',
-              ')',
-              ')',
-              ' ',
-              '+',
-              ' ',
-              [
-                ' ',
-                '1',
-                ' ',
-                '-',
-                ' ',
-                [
-                  ' ',
-                  '5',
-                  ' ',
-                  '-',
-                  ' ',
-                  '1',
-                  ')',
-                  ' ',
-                  ')'
-                ]
-              ]
-            ]
+            ],
+          ],
+          '+',
+          [
+            '1',
+            '-',
+            [
+              '5',
+              '-',
+              '1',
+            ],
           ]
         ]
       );
@@ -249,8 +250,8 @@ describe('calcUtil', function () {
     expect(value).to.equal(8);
   });
 
-  it('getLastChain', () => {
-    const value = calcUtil.getLastChain(['4', '+', '4']);
+  it('getLastTreeNode', () => {
+    const value = calcUtil.getLastTreeNode(['4', '+', '4']);
     expect(value).to.deep.equal(['4', '+', '4']);
   });
 });
