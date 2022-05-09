@@ -7,6 +7,11 @@ describe('calcUtil', function () {
     expect(value).to.equal('15');
   });
 
+  it('formatTreeArrayToDisplay', () => {
+    const value = calcUtil.formatTreeArrayToDisplay(['5', '+', '1', '0']);
+    expect(value).to.equal('5 + 10');
+  });
+
   describe('getInputTreeArray', () => {
     it('0', () => {
       const value = calcUtil.getInputTreeArray('0');
@@ -44,7 +49,6 @@ describe('calcUtil', function () {
 
     it('0+(12+(2+(3+(1+7', () => {
       const value = calcUtil.getInputTreeArray('0+(12+(2+(3+(1+7');
-      // console.log(value);
       expect(value).to.deep.equal(
         [
           '0',
@@ -213,9 +217,16 @@ describe('calcUtil', function () {
     });
   });
 
-  it('getInputGroups', () => {
-    const value = calcUtil.getInputGroups(['4']);
-    expect(value).to.deep.equal(['4']);
+  describe('getInputGroups', () => {
+    it('4', () => {
+      const value = calcUtil.getInputGroups(['4']);
+      expect(value).to.deep.equal(['4']);
+    });
+
+    it('5 + 10', () => {
+      const value = calcUtil.getInputGroups(['5', ' ', '+', ' ', '1', '0']);
+      expect(value).to.deep.equal(['5 ', '+', ' 10']);
+    });
   });
 
   it('computeValue', () => {

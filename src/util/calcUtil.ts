@@ -32,10 +32,5 @@ export default {
   },
   getNestedInputs: util.getInputTreeArray,
   getTotal: util.getTotal,
-  /**
-   *
-   * @param {*} value
-   * @returns
-   */
   isOperator: util.isOperator
 };

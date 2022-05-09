@@ -51,14 +51,14 @@ export default {
     return chain;
   },
   /**
-   * Convert math input string to array trees
+   * Convert input string to tree array
    * @param {string} input - input entry
-   * @returns {array} of input array trees
+   * @returns {array} of input tree array
    */
   getInputTreeArray(input) {
     // How deep in the chain we are
     let chainLevel = 0;
-    const result = input.split('').reduce((acc, currentValue, i, arr) => {
+    const result = input.split('').reduce((acc, currentValue) => {
       const lastChain = this.getLastChain(acc, chainLevel);
       // Create New Array from group key
       let formattedInput = currentValue;
@@ -83,6 +83,14 @@ export default {
     return result;
   },
   /**
+   * Format input tree array to display
+   * e.g. ['5', ' ', '+', ' ', '1', '0'] = '5 + 10'
+   * @param {array} treeArray - input tree array
+   */
+  formatTreeArrayToDisplay(treeArray) {
+    return this.getInputGroups(treeArray).join(' ');
+  },
+  /**
    * Get Formatted Input Tree with provided formatter
    * @param {array} arr - Input array to format
    * @param {function} formatter - formatter for each array
@@ -102,18 +110,21 @@ export default {
 
     return formatter(arr, [], level);
   },
-  // values => arr
-  // returns => arr|null
-  getInputGroups(values) {
-    if (values) {
+  /**
+   * Group math values from provided tree array
+   * @param {array} - values of tree array
+   * @returns {array|null} of grouped values
+   */
+  getInputGroups(arr) {
+    if (arr) {
       let merged = [''];
-      for (let i = 0; i < values.length; i++) {
+      for (let i = 0; i < arr.length; i++) {
         // Push to new group current or previous was operator
-        if (this.isOperator(merged[merged.length-1]) || this.isOperator(values[i])) {
-          merged.push(values[i]);
+        if (this.isOperator(merged[merged.length-1]) || this.isOperator(arr[i])) {
+          merged.push(arr[i]);
         // Add value to previous group
         } else {
-          merged[merged.length-1] += values[i];
+          merged[merged.length-1] += arr[i];
         }
       }
 

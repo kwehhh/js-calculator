@@ -242,19 +242,6 @@ class Calculator {
     // new total is here
     const total = calcUtil.formatInputs(nestedInputs,  (arr, lastCompute = 0) => {
       const t = calcUtil.getInputGroups(arr);
-      const j = t.map(res => {
-
-        if (calcUtil.isOperator(res)) {
-          return Spawn({
-            children: res
-          });
-        } else {
-          return Spawn({
-            children: res
-          });
-        }
-      });
-
       return calcUtil.getTotal(t) + lastCompute;
     });
 
@@ -400,6 +387,8 @@ class Calculator {
       ];
       return res;
     });
+
+    debugger
 
     // Update reference of last used arithmatic
     this.renderInput(this.prevInputEl, inputGroups);
