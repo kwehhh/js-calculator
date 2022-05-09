@@ -3,6 +3,10 @@ import _ from '@unfocused/treasure-goblin';
 
 const { OPERATOR } = CONSTANT;
 
+/**
+ * Calculator Util
+ * All the calculations are belong to us.
+ */
 export default {
   /**
    * Calculate Total
@@ -19,6 +23,21 @@ export default {
             return this.getTotal(t) + lastCompute;
           }
      )));
+  },
+  /**
+   * Format value to readable display
+   * @param {string} str - value to format
+   * @returns {string} for formatted value eg 5000 F=> 5,000
+   */
+  formatToDisplayValue(str) {
+    const [integer, decimal] = str.split('.');
+    let value = _.splitToChunksRight(integer, 3).join(',');
+
+    if (decimal) {
+      value += `.${decimal}`
+    }
+
+    return value;
   },
   /**
    * Compute two values
@@ -40,9 +59,13 @@ export default {
         return a + b;
     }
   },
-    // input arr
-  // return arr
-  getLastChain: function(chain, level) {
+  /**
+   * Get Last Chain
+   * @param {array} chain - the chain
+   * @param {number} level - chain level
+   * @returns {array} of last chain
+   */
+  getLastChain(chain, level) {
     const lastItem = chain[chain.length-1];
     if (level > 0 && Array.isArray(lastItem)) {
       return this.getLastChain(lastItem, level - 1);

@@ -229,6 +229,18 @@ describe('calcUtil', function () {
     });
   });
 
+  describe('formatToDisplayValue', () => {
+    it('integer', () => {
+      const value = calcUtil.formatToDisplayValue('5000');
+      expect(value).to.equal('5,000');
+    });
+
+    it('integer + decimal', () => {
+      const value = calcUtil.formatToDisplayValue('5000000.25');
+      expect(value).to.equal('5,000,000.25');
+    });
+  });
+
   it('computeValue', () => {
     const value = calcUtil.computeValue(5, '+', 10);
     expect(value).to.equal(15);
@@ -237,5 +249,11 @@ describe('calcUtil', function () {
   it('getTotal', () => {
     const value = calcUtil.getTotal(['4', '+', '4']);
     expect(value).to.equal(8);
+  });
+
+  it('getLastChain', () => {
+    const value = calcUtil.getLastChain(['4', '+', '4']);
+    console.log(value)
+    expect(value).to.deep.equal(['4', '+', '4']);
   });
 });
