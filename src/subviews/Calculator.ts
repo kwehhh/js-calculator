@@ -357,39 +357,10 @@ class Calculator {
   calculateInput() {
     const inputStr = this.input;
     const total = calcUtil2.calculateTotal(inputStr);
-
-    // need a depth count to get how many ending parens.....!!! TODO NEXT
-    let lastLevel = -1;
     const nestedInputs = calcUtil2.getInputTreeArray(inputStr);
-    const inputGroups = calcUtil.formatInputs(nestedInputs, (arr, prevArr = [], level) => {
-      // try to manage position.....
-      if (lastLevel < 0) {
-        lastLevel = level;
-      } else {
-        lastLevel = 0;
-      }
-
-      // Auto close parenthesisisisisiis
-      let open = '(';
-      if (level === 1) {
-        open = '';
-      }
-      let close = '';
-      for (let i = 0; i < lastLevel; i++) {
-        close += ')';
-      }
-
-      const res = [
-        open,
-        ...calcUtil.getInputGroups(arr),
-        close,
-        ...prevArr
-      ];
-      return res;
-    });
 
     // Update reference of last used arithmatic
-    this.renderInput(this.prevInputEl, inputGroups);
+    this.renderInput(this.prevInputEl, calcUtil2.getInputGroups(nestedInputs));
     // Update Input Result
     // change to renderInput ?
     this.updateInput(
