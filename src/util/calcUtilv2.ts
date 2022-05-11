@@ -114,7 +114,14 @@ export default {
    * @param {array} treeArray - input tree array
    */
   formatTreeArrayToDisplay(treeArray) {
-    return this.getInputGroups(treeArray).join(' ');
+    const arr = this.getInputGroups(treeArray).join(' ').split('');
+    return arr.map((char, i) => {
+      // scrub extra space around parens
+      if (char === ' ' && ((arr[i - 1] && arr[i - 1] === '(') || (arr[i + 1] && arr[i + 1] === ')'))) {
+        return '';
+      }
+      return char;
+    }).join('');
   },
   /**
    * Get Formatted Input Tree with provided formatter
@@ -145,8 +152,17 @@ export default {
     if (arr) {
       let merged = [''];
       for (let i = 0; i < arr.length; i++) {
+
+        // Nested Input Group
+        if (Array.isArray(merged[merged.length-1]) || Array.isArray(arr[i])) {
+          merged = [
+            ...merged,
+            '(',
+            ...this.getInputGroups(arr[i]),
+            ')'
+          ];
         // Push to new group current or previous was operator
-        if (this.isOperator(merged[merged.length-1]) || this.isOperator(arr[i])) {
+        } else if (this.isOperator(merged[merged.length-1]) || this.isOperator(arr[i])) {
           merged.push(arr[i]);
         // Add value to previous group
         } else {

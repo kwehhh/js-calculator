@@ -7,9 +7,25 @@ describe('calcUtil', function () {
     expect(value).to.equal('15');
   });
 
-  it('formatTreeArrayToDisplay', () => {
-    const value = calcUtil.formatTreeArrayToDisplay(['5', '+', '1', '0']);
-    expect(value).to.equal('5 + 10');
+  describe('formatTreeArrayToDisplay', () => {
+    it('basic', () => {
+      const value = calcUtil.formatTreeArrayToDisplay(['5', '+', '1', '0']);
+      expect(value).to.equal('5 + 10');
+    });
+
+    it('nested', () => {
+      const arr = calcUtil.getInputTreeArray('10+(80/2)+1');
+      expect(arr).to.deep.equal([ '1', '0', '+', [ '8', '0', '/', '2' ], '+', '1' ]);
+      const value = calcUtil.formatTreeArrayToDisplay(arr);
+      expect(value).to.equal('10 + (80 / 2) + 1');
+    });
+
+    it('deep nested', () => {
+      const arr = calcUtil.getInputTreeArray('10+(100-(80/2))+1');
+      expect(arr).to.deep.equal([ '1', '0', '+', ['1', '0', '0', '-', [ '8', '0', '/', '2' ]], '+', '1' ]);
+      const value = calcUtil.formatTreeArrayToDisplay(arr);
+      expect(value).to.equal('10 + (100 - (80 / 2)) + 1');
+    });
   });
 
   describe('getInputTreeArray', () => {
@@ -66,7 +82,7 @@ describe('calcUtil', function () {
       );
     });
 
-    it('0+(12+(2+(3+(1+7', () => {
+    it('Incomplete Parentheses', () => {
       const value = calcUtil.getInputTreeArray('0+(12+(2+(3+(1+7');
       expect(value).to.deep.equal(
         [
