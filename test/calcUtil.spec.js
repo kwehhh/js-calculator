@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import calcUtil from '../src/util/calcUtilv2.ts';
+import calcUtil from '../src/util/calcUtil.ts';
 
 describe('calcUtil', function () {
   it('calculateTotal', () => {

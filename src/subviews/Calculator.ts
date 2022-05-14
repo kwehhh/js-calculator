@@ -2,7 +2,6 @@
 import Spawn from '@unfocused/spawn';
 import _ from '@unfocused/treasure-goblin';
 import calcUtil from '../util/calcUtil';
-import calcUtil2 from '../util/calcUtilv2';
 import CONSTANT from '../util/constants';
 
 export interface CalculatorProps {
@@ -154,7 +153,7 @@ class Calculator {
     this.el = this.render();
 
     // ... call from history prop....
-    this.calculateInput();
+    this.calculateInput(this.input);
     this.addEventListeners();
 
     return this;
@@ -207,13 +206,13 @@ class Calculator {
   // @returns {string}
   getCalculatedInput(str = this.input) {
     // need a depth count to get how many ending parens.....!!! TODO NEXT
-    const nestedInputs = calcUtil2.getInputTreeArray(str);
+    const nestedInputs = calcUtil.getInputTreeArray(str);
 
     // split into separate fn....
     // !! NESTING NEEDS TO BE PRESERVED!!! for render display
     const inputGroups = this.getFormattedInputGroups(nestedInputs).reduce((acc, item, i) => [...acc, item, ' '], []).slice(0, -1);
     let lastLevel = -1;
-    const inputGroups2 = calcUtil.formatInputs(nestedInputs, (arr, prevArr = [], level) => {
+    const inputGroups2 = calcUtil.getFormattedInputTree(nestedInputs, (arr, prevArr = [], level) => {
       // try to manage position.....
       if (lastLevel < 0) {
         lastLevel = level;
@@ -240,7 +239,7 @@ class Calculator {
     });
 
     // new total is here
-    const total = calcUtil.formatInputs(nestedInputs,  (arr, lastCompute = 0) => {
+    const total = calcUtil.getFormattedInputTree(nestedInputs,  (arr, lastCompute = 0) => {
       const t = calcUtil.getInputGroups(arr);
       return calcUtil.getTotal(t) + lastCompute;
     });
@@ -263,13 +262,19 @@ class Calculator {
     return INPUTS;
   }
 
-  renderInput(displayEl, inputArray) {
+  /**
+   * Render Input Display
+   * @param {HTMLElement} displayEl - el to render the display
+   * @param {array} inputArray - array to use to render display
+   */
+  renderInputDisplay(displayEl, inputArray) {
     // Save reference of last used arithmatic
     displayEl.innerHTML = '';
     inputArray.forEach(item => {
       let el;
       let children = item;
 
+      // Render Operator
       if (calcUtil.isOperator(children)) {
         // special format
         const filter = INPUTS.filter(z => z.value === children);
@@ -279,7 +284,7 @@ class Calculator {
 
         el = Spawn({
           tag: 'span',
-          children,
+          children: ` ${children} `,
           style: {
             color: '#8B570D'
           }
@@ -338,7 +343,7 @@ class Calculator {
         // Calculate Input
         case '=':
         case 'Enter':
-          this.calculateInput();
+          this.calculateInput(this.input);
           break;
         // Add Value to Input
         default:
@@ -354,23 +359,28 @@ class Calculator {
     this.updateInput(DEFAULT_VALUE);
   }
 
-  calculateInput() {
-    const inputStr = this.input;
-    const total = calcUtil2.calculateTotal(inputStr);
-    const nestedInputs = calcUtil2.getInputTreeArray(inputStr);
+  /**
+   * Calculate input
+   * Updates history and input containers
+   * @param {string} inputStr - input string to calculate
+   */
+  calculateInput(inputStr) {
+    // Update history
+    this.renderInputDisplay(
+      this.prevInputEl,
+      calcUtil.getInputGroups(calcUtil.getInputTreeArray(inputStr))
+    );
 
-    // Update reference of last used arithmatic
-    this.renderInput(this.prevInputEl, calcUtil2.getInputGroups(nestedInputs));
-    // Update Input Result
-    // change to renderInput ?
+    // Update Input Entry
+    const total = calcUtil.calculateTotal(inputStr);
     this.updateInput(
       total,
-      el => el.innerHTML = calcUtil.getFormattedDisplayValue(_.toStr(total), 3)
+      el => el.innerHTML = calcUtil.formatToDisplayValue(_.toStr(total), 3)
     );
   }
 
   getFormattedInputGroups(nestedInputs) {
-    return calcUtil.formatInputs(nestedInputs,  (arr, lastCompute = []) => {
+    return calcUtil.getFormattedInputTree(nestedInputs,  (arr, lastCompute = []) => {
       return [...calcUtil.getInputGroups(arr), ...lastCompute];
     });
   }
@@ -383,7 +393,7 @@ class Calculator {
   getFormattedInput(value) {
     let formattedValue = `${value}`;
     const lastInput = this.input.slice(-1);
-    const nestedInputs = calcUtil2.getInputTreeArray(this.input);
+    const nestedInputs = calcUtil.getInputTreeArray(this.input);
     // !! NESTING NEEDS TO BE PRESERVED
     const inputGroups = this.getFormattedInputGroups(nestedInputs);
     const lastInputGroup = inputGroups[inputGroups.length-1];
@@ -421,7 +431,7 @@ class Calculator {
   appendInputValue(value) {
     const input = this.getFormattedInput(value);
     const { inputAsArray } = this.getCalculatedInput(input);
-    this.updateInput(input, el => this.renderInput(el, inputAsArray));
+    this.updateInput(input, el => this.renderInputDisplay(el, inputAsArray));
   }
 
   removeLastInputValue() {
