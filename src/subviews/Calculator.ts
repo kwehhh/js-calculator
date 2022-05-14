@@ -11,9 +11,12 @@ export interface CalculatorProps {
   theme: any;
 }
 
-const { COLOR_PALETTE } = CONSTANT;
-
-const DEFAULT_VALUE = '0';
+// CONSTANTS
+const {
+  BUTTONS,
+  COLOR_PALETTE,
+  DEFAULT_VALUE
+} = CONSTANT;
 
 // Actions
 const ACTION = {
@@ -23,87 +26,6 @@ const ACTION = {
   // remove this one....
   EQUALS: '='
 };
-
-// Calculator Inputs
-const INPUTS = [
-  // Euler
-  {
-    value: 'e'
-  },
-  // Pie
-  {
-    label: 'π',
-    value: 'p'
-  },
-  {
-    name: 'sin',
-    value: null
-  },
-  {
-    name: 'deg',
-    value: null
-  },
-  {
-    label: 'C',
-    value: 'clear'
-  },
-  {
-    value: '('
-  },
-  {
-    value: ')'
-  },
-  {
-    // label: '÷',
-    value: '/'
-  },
-  {
-    value: 7
-  },
-  {
-    value: 8
-  },
-  {
-    value: 9
-  },
-  {
-    label: 'X',
-    value: '*'
-  },
-  {
-    value: 4
-  },
-  {
-    value: 5
-  },
-  {
-    value: 6
-  },
-  {
-    value: '-'
-  },
-  {
-    value: 1
-  },
-  {
-    value: 2
-  },
-  {
-    value: 3
-  },
-  {
-    value: '+'
-  },
-  {
-    value: 0
-  },
-  {
-    value: '.'
-  },
-  {
-    value: ACTION.EQUALS
-  }
-];
 
 const GLOBAL_INPUTS = [
   // Remove last character
@@ -126,12 +48,11 @@ class Calculator {
   el: HTMLElement;
   input: string;
   inputEl: HTMLElement;
-  prevInputEl: HTMLElement;
+  historyEl: HTMLElement;
   props: CalculatorProps;
   theme: any;
 
   constructor(props = {}) {
-
     this.props = {
       className: '',
       input: DEFAULT_VALUE,
@@ -143,22 +64,12 @@ class Calculator {
     this.buttons = {};
     this.input = this.props.input;
     this.theme = this.getTheme(this.props.theme);
-
-    // Display Input Element
-    this.inputEl = this.renderInputEntry();
-
-    // Display Last Calculated Input Element
-    this.prevInputEl = this.renderHistoryEntry();
-
-    this.el = this.render();
-
-    // ... call from history prop....
-    this.calculateInput(this.input);
+    this.mountElements();
+    this.calculate(this.input);
     this.addEventListeners();
 
     return this;
   }
-
 
   /**
    * Add event listeners
@@ -168,38 +79,12 @@ class Calculator {
     document.addEventListener('keyup', this.handleKeyUp);
   }
 
-  getTheme(theme) {
-    return {
-      background: COLOR_PALETTE.GRAY_10,
-      // Default Button
-      button: COLOR_PALETTE.GRAY_20,
-      buttonHover: COLOR_PALETTE.GRAY_30,
-      buttonPress: COLOR_PALETTE.GRAY_40,
-      buttonAction: COLOR_PALETTE.WHITE_00,
-      // Operator Button
-      buttonOp: COLOR_PALETTE.YELLOW_10,
-      buttonOpHover: COLOR_PALETTE.YELLOW_20,
-      buttonOpPress: COLOR_PALETTE.YELLOW_30,
-      // Clear Button
-      buttonClr: COLOR_PALETTE.RED_80,
-      buttonClrHover: COLOR_PALETTE.RED_70,
-      buttonClrPress: COLOR_PALETTE.RED_60,
-      buttonClrFont: COLOR_PALETTE.RED_10,
-      // Compute Button
-      buttonComp: COLOR_PALETTE.GREEN_10,
-      buttonCompHover: COLOR_PALETTE.GREEN_20,
-      buttonCompPress: COLOR_PALETTE.GREEN_30,
-      color: COLOR_PALETTE.WHITE_00,
-      displayColor: COLOR_PALETTE.WHITE_00,
-      ...theme
-    };
-  }
-
   /**
    * Destroy Calculator Instance
    */
   destroy() {
     document.removeEventListener('keydown', this.handleKeyDown);
+    document.removeEventListener('keyup', this.handleKeyUp);
     this.el = null;
   }
 
@@ -254,53 +139,37 @@ class Calculator {
     };
   }
 
-  /**
-   * Get button
-   * @returns {array} of buttons for calculator
-   */
-  getButtons() {
-    return INPUTS;
-  }
-
-  /**
-   * Render Input Display
-   * @param {HTMLElement} displayEl - el to render the display
-   * @param {array} inputArray - array to use to render display
-   */
-  renderInputDisplay(displayEl, inputArray) {
-    // Save reference of last used arithmatic
-    displayEl.innerHTML = '';
-    inputArray.forEach(item => {
-      let el;
-      let children = item;
-
-      // Render Operator
-      if (calcUtil.isOperator(children)) {
-        // special format
-        const filter = INPUTS.filter(z => z.value === children);
-        if (filter.length && filter[0].label) {
-          children = filter[0].label.toLowerCase();
-        }
-
-        el = Spawn({
-          tag: 'span',
-          children: ` ${children} `,
-          style: {
-            color: '#8B570D'
-          }
-        })
-      } else {
-        el = Spawn(children);
-      }
-
-      displayEl.appendChild(el);
-    })
-  }
-
   getValidInputs(value) {
-    const result = [...INPUTS, ...GLOBAL_INPUTS].map(o => `${o.value}`).indexOf(`${value}`) > -1;
+    const result = [...BUTTONS, ...GLOBAL_INPUTS].map(o => `${o.value}`).indexOf(`${value}`) > -1;
     // Return value instead of T/F
     return result;
+  }
+
+  getTheme(theme) {
+    return {
+      background: COLOR_PALETTE.GRAY_10,
+      // Default Button
+      button: COLOR_PALETTE.GRAY_20,
+      buttonHover: COLOR_PALETTE.GRAY_30,
+      buttonPress: COLOR_PALETTE.GRAY_40,
+      buttonAction: COLOR_PALETTE.WHITE_00,
+      // Operator Button
+      buttonOp: COLOR_PALETTE.YELLOW_10,
+      buttonOpHover: COLOR_PALETTE.YELLOW_20,
+      buttonOpPress: COLOR_PALETTE.YELLOW_30,
+      // Clear Button
+      buttonClr: COLOR_PALETTE.RED_80,
+      buttonClrHover: COLOR_PALETTE.RED_70,
+      buttonClrPress: COLOR_PALETTE.RED_60,
+      buttonClrFont: COLOR_PALETTE.RED_10,
+      // Compute Button
+      buttonComp: COLOR_PALETTE.GREEN_10,
+      buttonCompHover: COLOR_PALETTE.GREEN_20,
+      buttonCompPress: COLOR_PALETTE.GREEN_30,
+      color: COLOR_PALETTE.WHITE_00,
+      displayColor: COLOR_PALETTE.WHITE_00,
+      ...theme
+    };
   }
 
   handleKeyDown = (e) => {
@@ -343,7 +212,7 @@ class Calculator {
         // Calculate Input
         case '=':
         case 'Enter':
-          this.calculateInput(this.input);
+          this.calculate(this.input);
           break;
         // Add Value to Input
         default:
@@ -364,10 +233,10 @@ class Calculator {
    * Updates history and input containers
    * @param {string} inputStr - input string to calculate
    */
-  calculateInput(inputStr) {
+  calculate(inputStr) {
     // Update history
     this.renderInputDisplay(
-      this.prevInputEl,
+      this.historyEl,
       calcUtil.getInputGroups(calcUtil.getInputTreeArray(inputStr))
     );
 
@@ -459,11 +328,28 @@ class Calculator {
   }
 
   /**
+   * Mount Element Instances
+   */
+  mountElements() {
+    // Display Input Element
+    this.inputEl = this.renderInputEntry();
+
+    // Display Last Calculated Input Element
+    this.historyEl = this.renderHistoryEntry();
+
+    // Main El container
+    this.el = this.render();
+  }
+
+  /**
    * Render Buttons on Calculator
+   * @returns {array} of HTMLElements
    */
    renderBtns() {
+     const ITEMS_PER_ROW = 4;
      const btnEls = [];
-    _.splitToChunks(this.getButtons(), 4).forEach((group, j) => {
+
+    _.splitToChunks(BUTTONS, ITEMS_PER_ROW).forEach((group, j) => {
       btnEls.push(Spawn({
         children: group.map((btn, i) => {
           const { label, name, value, ...restProps } = btn;
@@ -580,6 +466,45 @@ class Calculator {
     return btnEls;
   }
 
+  /**
+   * Render Input Display
+   * @param {HTMLElement} displayEl - el to render the display
+   * @param {array} inputArray - array to use to render display
+   */
+   renderInputDisplay(displayEl, inputArray) {
+    // Save reference of last used arithmatic
+    displayEl.innerHTML = '';
+    inputArray.forEach(item => {
+      let el;
+      let children = item;
+
+      // Render Operator
+      if (calcUtil.isOperator(children)) {
+        // special format
+        const filter = BUTTONS.filter(z => z.value === children);
+        if (filter.length && filter[0].label) {
+          children = filter[0].label.toLowerCase();
+        }
+
+        el = Spawn({
+          tag: 'span',
+          children: ` ${children} `,
+          style: {
+            color: '#8B570D'
+          }
+        })
+      } else {
+        el = Spawn(children);
+      }
+
+      displayEl.appendChild(el);
+    })
+  }
+
+  /**
+   * Render History
+   * @returns {HTMLElement} of history
+   */
   renderHistoryEntry() {
     return Spawn({
       style: {
@@ -589,6 +514,10 @@ class Calculator {
     });
   }
 
+  /**
+   * Render Input Entry
+   * @returns {HTMLElement} of input entry
+   */
   renderInputEntry() {
     const { input } = this.props;
 
@@ -609,13 +538,14 @@ class Calculator {
       textAlign: 'right',
       overflow: 'hidden'
     };
+
     return Spawn({
       className: [className, 'js-calculator'].join(' '),
       children: [
         Spawn({
           children: [
             Spawn({
-              children: this.prevInputEl,
+              children: this.historyEl,
               style: {
                 color: this.theme.displayColor,
                 // fixed height so does not shify

@@ -1,4 +1,85 @@
+/**
+ * CONSTANTS
+ */
 export default {
+  BUTTONS: [
+    // Euler
+    {
+      value: 'e'
+    },
+    // Pie
+    {
+      label: 'π',
+      value: 'p'
+    },
+    {
+      name: 'sin',
+      value: null
+    },
+    {
+      name: 'deg',
+      value: null
+    },
+    {
+      label: 'C',
+      value: 'clear'
+    },
+    {
+      value: '('
+    },
+    {
+      value: ')'
+    },
+    {
+      value: '/'
+    },
+    {
+      value: 7
+    },
+    {
+      value: 8
+    },
+    {
+      value: 9
+    },
+    {
+      label: 'X',
+      value: '*'
+    },
+    {
+      value: 4
+    },
+    {
+      value: 5
+    },
+    {
+      value: 6
+    },
+    {
+      value: '-'
+    },
+    {
+      value: 1
+    },
+    {
+      value: 2
+    },
+    {
+      value: 3
+    },
+    {
+      value: '+'
+    },
+    {
+      value: 0
+    },
+    {
+      value: '.'
+    },
+    {
+      value: '='
+    }
+  ],
   DEFAULT_VALUE: '0',
   COLOR_PALETTE: {
     WHITE_00: '#ffffff',
