@@ -2,9 +2,28 @@ import { expect } from 'chai';
 import calcUtil from '../src/util/calcUtil.ts';
 
 describe('calcUtil', function () {
-  it('calculateTotal', () => {
-    const value = calcUtil.calculateTotal('5 + 10');
-    expect(value).to.equal('15');
+  describe('calculateTotal', () => {
+    it('basic', () => {
+      const value = calcUtil.calculateTotal('5 + 10');
+      expect(value).to.equal('15');
+    });
+
+    it('deep nested', () => {
+      const value = calcUtil.calculateTotal('10+(100-(80/2))+1');
+      expect(value).to.equal('71');
+    });
+  });
+
+  describe('formatTree', () => {
+    it('single group', () => {
+      const value = calcUtil.formatTree(['1', '1']);
+      expect(value).to.deep.equal(['11']);
+    });
+
+    it('3 groups', () => {
+      const value = calcUtil.formatTree(['1', '1', '+', '5', '0', '0']);
+      expect(value).to.deep.equal(['11', '+', '500']);
+    });
   });
 
   describe('formatTreeArrayToDisplay', () => {
@@ -204,22 +223,22 @@ describe('calcUtil', function () {
     });
   });
 
-  describe('getFormattedInputTree', () => {
-    it('no change', () => {
-      const value = calcUtil.getFormattedInputTree(['5', ' ', '+', ' ', '1', '0']);
-      expect(value).to.deep.equal(['5', ' ', '+', ' ', '1', '0']);
-    });
-    it('5', () => {
-      const value = calcUtil.getFormattedInputTree(
-        ['5', ' ', '+', ' ', '1', '0'],
-        (arr, next, i) => {
-          return 5;
-        }
-      );
+  // describe('getFormattedInputTree', () => {
+  //   it('no change', () => {
+  //     const value = calcUtil.getFormattedInputTree(['5', ' ', '+', ' ', '1', '0']);
+  //     expect(value).to.deep.equal(['5', ' ', '+', ' ', '1', '0']);
+  //   });
+  //   it('5', () => {
+  //     const value = calcUtil.getFormattedInputTree(
+  //       ['5', ' ', '+', ' ', '1', '0'],
+  //       (arr, next, i) => {
+  //         return 5;
+  //       }
+  //     );
 
-      expect(value).to.equal(5);
-    });
-  });
+  //     expect(value).to.equal(5);
+  //   });
+  // });
 
   describe('isOperator', () => {
     it('true', () => {

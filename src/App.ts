@@ -1,4 +1,3 @@
-// @ts-ignore
 import Spawn, { Mount } from '@unfocused/spawn';
 import CONSTANT from './util/constants';
 import Calculator from './subviews/Calculator';
@@ -107,10 +106,9 @@ const { COLOR_PALETTE } = CONSTANT;
 // more border radius on buttons
 export default class App {
   constructor(props = {}) {
-    const calcEl = Spawn();
+    const calcAppContainer = Spawn();
     const caclApp = new Calculator(props);
-
-    Mount(calcEl, caclApp.el);
+    Mount(calcAppContainer, caclApp.el);
 
     // App Element
     const el = Spawn({
@@ -132,8 +130,6 @@ export default class App {
               style: {
                 display: 'inline-flex',
                 background: '#ff005e',
-                // #ff1f71
-                //#ff3d84
                 color: 'white',
                 width: 26,
                 height: 26,
@@ -157,13 +153,12 @@ export default class App {
           children: 'Use keyboard or click buttons to calculate!',
           style:{
             color: '#dddddd',
-            // fontSize: '14px',
             fontSize: 12,
             marginTop: 8,
             marginBottom: 10
           }
         }),
-        calcEl,
+        calcAppContainer,
         Spawn({
           children: [
             'Inspired by Nicat Manafov',
@@ -192,13 +187,7 @@ export default class App {
             textAlign: 'center'
           }
         })
-      ],
-      // style: {
-      //   color: COLOR_PALETTE.WHITE_00,
-      //   fontSize: 16,
-      //   display: 'flex',
-      //   alignItems: 'center'
-      // }
+      ]
     });
 
 

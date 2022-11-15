@@ -6,7 +6,7 @@ All your calculations are belong to us.
 2. `cd js-calculator` to go to root.
 3. `npm run install` to install.
 
-* Prerequisits: Requires git and npm to be installed.
+* Prerequisits: Requires `git` and `npm` to be installed.
 
 ### Run
 1. `npm run start`
@@ -15,9 +15,9 @@ All your calculations are belong to us.
 ### Build
 1. `npm run build` to generate a standalone production build to `/dist` directory.
 
-### Tests
+### Test
 - `npm run test` to run tests
--  `npm run test  -- --grep "formatTreeArrayToDisplay"` to run specific test
+- `npm run test  -- --grep "formatTreeArrayToDisplay"` to run specific test
 
 To view the latest dev preview:
 https://unstable.memoryleak.ai/js-calculator/

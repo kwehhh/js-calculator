@@ -1,4 +1,3 @@
-// @ts-ignore
 import Spawn from '@unfocused/spawn';
 import _ from '@unfocused/treasure-goblin';
 import calcUtil from '../util/calcUtil';
@@ -23,7 +22,7 @@ const ACTION = {
   CLEAR: 'clear',
   UNDO: 'undo',
   COMPUTE: '=',
-  // remove this one....
+  // @deprecated
   EQUALS: '='
 };
 
@@ -45,7 +44,7 @@ const GLOBAL_INPUTS = [
  */
 class Calculator {
   buttons: any;
-  el: HTMLElement;
+  el: HTMLElement | null;
   input: string;
   inputEl: HTMLElement;
   historyEl: HTMLElement;
@@ -89,7 +88,12 @@ class Calculator {
   }
 
   // @returns {string}
-  getCalculatedInput(str = this.input) {
+  /**
+   * Get Calculated Input
+   * @param {string} str - input string
+   * @returns {object} of things
+   */
+  getCalculatedInput(str: string = this.input): Record<any, any> {
     // need a depth count to get how many ending parens.....!!! TODO NEXT
     const nestedInputs = calcUtil.getInputTreeArray(str);
 
@@ -216,7 +220,7 @@ class Calculator {
           break;
         // Add Value to Input
         default:
-          this.appendInputValue(value);
+          this.setInputValue(value);
       }
     }
   }
@@ -229,11 +233,11 @@ class Calculator {
   }
 
   /**
-   * Calculate input
+   * Calculate current input
    * Updates history and input containers
    * @param {string} inputStr - input string to calculate
    */
-  calculate(inputStr) {
+  calculate(inputStr: string) {
     // Update history
     this.renderInputDisplay(
       this.historyEl,
@@ -248,6 +252,7 @@ class Calculator {
     );
   }
 
+  // BROKEN
   getFormattedInputGroups(nestedInputs) {
     return calcUtil.getFormattedInputTree(nestedInputs,  (arr, lastCompute = []) => {
       return [...calcUtil.getInputGroups(arr), ...lastCompute];
@@ -255,16 +260,37 @@ class Calculator {
   }
 
   /**
+   * Get Input as Display Format
+   * @param {string} inputStr - input stirng
+   * @returns {}
+   */
+  getInputForDisplay(inputStr: string): string[] {
+    // const test = this.getFormattedInput(inputStr);
+    const inputTree = calcUtil.getInputTreeArray(inputStr);
+    const formattedTree = calcUtil.formatTree(inputTree);
+    const formatted = formattedTree.map(item => {
+      // Strip leading 0's per input group
+      if (calcUtil.isNumeric(item)) {
+        return `${Number(item)}`;
+      }
+
+      return item;
+    });
+    console.log('getInputForDisplay', formatted, formattedTree, inputTree, inputStr);
+    // return formatted.join('');
+    return formatted;
+  }
+
+  /**
    * Formats current input with value
    * @param {string|number} value
    * @returns {string} of formatted input
    */
-  getFormattedInput(value) {
+  getFormattedInput(value: string | number) {
     let formattedValue = `${value}`;
     const lastInput = this.input.slice(-1);
     const nestedInputs = calcUtil.getInputTreeArray(this.input);
-    // !! NESTING NEEDS TO BE PRESERVED
-    const inputGroups = this.getFormattedInputGroups(nestedInputs);
+    const inputGroups = calcUtil.formatTree(nestedInputs);
     const lastInputGroup = inputGroups[inputGroups.length-1];
 
     // Do not allow more than one decimal per input group
@@ -295,18 +321,19 @@ class Calculator {
 
     return result;
   }
-
-  // value => str|num
-  appendInputValue(value) {
-    const input = this.getFormattedInput(value);
-    const { inputAsArray } = this.getCalculatedInput(input);
-    this.updateInput(input, el => this.renderInputDisplay(el, inputAsArray));
+  /**
+   * Set Input Value
+   * @param {string|number} - input value
+   */
+  setInputValue(value: string | number) {
+    const input = this.input + `${value}`;
+    const formattedInput = this.getInputForDisplay(input);
+    this.updateInput(input, el => this.renderInputDisplay(el, formattedInput));
   }
 
   removeLastInputValue() {
     let newVal = this.input.slice(0, -1);
     newVal = newVal || DEFAULT_VALUE;
-
     this.updateInput(newVal);
   }
 
@@ -316,7 +343,7 @@ class Calculator {
    * @param {function} renderer - how to render input on the display
    * ....
    */
-  updateInput(input, renderer) {
+  updateInput(input: string, renderer?: (el: Element, input: string) => void) {
     this.input = input;
 
     // Update Display
@@ -467,11 +494,11 @@ class Calculator {
   }
 
   /**
-   * Render Input Display
+   * Render Input as Pretty Display
    * @param {HTMLElement} displayEl - el to render the display
    * @param {array} inputArray - array to use to render display
    */
-   renderInputDisplay(displayEl, inputArray) {
+   renderInputDisplay(displayEl: Element, inputArray: string[]) {
     // Save reference of last used arithmatic
     displayEl.innerHTML = '';
     inputArray.forEach(item => {

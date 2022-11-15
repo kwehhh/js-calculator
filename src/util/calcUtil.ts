@@ -10,19 +10,14 @@ const { OPERATOR } = CONSTANT;
 export default {
   /**
    * Calculate Total
-   * @param {string} inputStr - Input math string entry
+   * @param {string} inputStr - Input string
    * @returns {string} of calculated total
    */
-  calculateTotal(inputStr) {
-     return _.trimLeadingZeroes(
-       _.toStr(
-         this.getFormattedInputTree
-         (this.getInputTreeArray(inputStr),
-          (arr, lastCompute = 0) => {
-            const t = this.getInputGroups(arr);
-            return this.getTotal(t) + lastCompute;
-          }
-     )));
+  calculateTotal(inputStr: string) {
+    const inputTree = this.getInputTreeArray(inputStr);
+    const formattedTree = this.formatTree(inputTree);
+    const total = this.getTotalFromTree(formattedTree);
+    return `${total}`;
   },
   /**
    * Format value to readable display
@@ -109,7 +104,7 @@ export default {
     }, []);
   },
   /**
-   * Format input tree array to display
+   * Format input tree array to input display
    * e.g. ['5', ' ', '+', ' ', '1', '0'] = '5 + 10'
    * @param {array} treeArray - input tree array
    */
@@ -127,12 +122,52 @@ export default {
    * Get Formatted Input Tree with provided formatter
    * @param {array} arr - Input array to format
    * @param {function} formatter - formatter for each array
+   * @param {number} [level] - recursion level
    * @returns {*} value from formatter()
    * TODO: need a depth count to get how many ending parens.....!!! TODO NEXT
    */
    getFormattedInputTree(arr, formatter = value => value, level = 0) {
+
+    const t = this.getInputGroups(
+      arr,
+      (previous, next, call) => {
+
+
+        return [
+          ...previous,
+          call(next)
+        ];
+
+        console.log(call);
+
+        // [...previous, this.getInputGroups(next)]
+      }
+    );
+    console.log('getFormattedInputTree', t, arr);
+
+
+
+    // const lastItem = arr[arr.length -1];
+    // const more = Array.isArray(lastItem);
+
+
+    // console.log('level', level, more, arr);
+    // if (more) {
+    //   return formatter(
+    //     arr.slice(0,-1),
+    //     this.getFormattedInputTree(lastItem, formatter, level + 1),
+    //     level + 1
+    //   );
+    // }
+
+    // return formatter(arr, [], level);
+  },
+  getFormattedInputTree_old(arr, formatter = value => value, level = 0) {
     const lastItem = arr[arr.length -1];
     const more = Array.isArray(lastItem);
+
+
+    console.log('level', level, more, arr);
     if (more) {
       return formatter(
         arr.slice(0,-1),
@@ -144,27 +179,96 @@ export default {
     return formatter(arr, [], level);
   },
   /**
-   * Group math values from provided tree array
+   * Check if value is number
+   * TODO: Add this to treasure-goblin
+   * @param {string|number} value - value
+   * @returns {boolean} true if numeric
+   */
+  isNumeric(value: string | number): boolean {
+    if (typeof value === 'string') {
+      !isNaN(parseFloat(value));
+    }
+
+    return !isNaN(value as number);
+  },
+  getTotalFromTree(array) {
+    let total = 0;
+    let operator = OPERATOR.ADD;
+
+    for (let i = 0; i < array.length; i++) {
+      const value = array[i];
+      // Get Total of Nested Groups
+      if (Array.isArray(value)) {
+
+        const nextVal = this.getTotalFromTree(value);
+        total = this.computeValue(total, operator, nextVal);
+      // Change Operator
+      } else if (this.isOperator(value)) {
+        operator = value;
+      // Compure new Value
+      } else {
+        total = this.computeValue(total, operator, Number(value));
+      }
+    }
+
+    return total;
+  },
+  /**
+   * Format Tree to grouped inputs
+   * @param {array} array - inputs
+   * @returns {array} of formatted
+   */
+  formatTree(array: string[]): string[] {
+    let newTree = [''];
+    for (let i = 0; i < array.length; i++) {
+      const value = array[i];
+      if (this.isNumeric(value)) {
+        // Push value if the last entry was Operator
+        if (this.isOperator(newTree[newTree.length - 1])) {
+          newTree.push(value);
+        // Append value to last entry
+        } else {
+          newTree[newTree.length - 1] += value;
+        }
+      } else if (Array.isArray(value)) {
+        newTree = [
+          ...newTree,
+          this.formatTree(value)
+        ];
+      } else {
+        newTree.push(value);
+      }
+    }
+
+    return newTree;
+  },
+  /**
+   * Group input values from provided tree array
    * @param {array} - values of tree array
+   * @param {function} - input group formatter
    * @returns {array|null} of grouped values
    */
-  getInputGroups(arr) {
+  getInputGroups(arr: any[], formatter?: (inputArr: string[], a: string, b: (inputArr: string[]) => void, c: string) => string[]) {
     if (arr) {
       let merged = [''];
       for (let i = 0; i < arr.length; i++) {
 
-        // Nested Input Group
+        // Flatten nested group
         if (Array.isArray(merged[merged.length-1]) || Array.isArray(arr[i])) {
-          merged = [
-            ...merged,
-            '(',
-            ...this.getInputGroups(arr[i]),
-            ')'
-          ];
-        // Push to new group current or previous was operator
+          if (formatter) {
+            merged = formatter(merged, arr[i], (nextArr) => this.getInputGroups(nextArr, formatter), 'nested');
+          } else {
+            merged = [
+              ...merged,
+              '(',
+              ...this.getInputGroups(arr[i]),
+              ')'
+            ];
+          }
+        // Split Operator to new group
         } else if (this.isOperator(merged[merged.length-1]) || this.isOperator(arr[i])) {
           merged.push(arr[i]);
-        // Add value to previous group
+        // Append value to previous group
         } else {
           merged[merged.length-1] += arr[i];
         }
@@ -186,7 +290,7 @@ export default {
     const mergedValues = this.getInputGroups(arr);
 
     mergedValues.forEach(node => {
-        const value = Number.parseFloat(node, 10);
+        const value = Number.parseFloat(node);
       // Value is Number
       if (!Number.isNaN(value)) {
         total = this.computeValue(total, operator, value);
