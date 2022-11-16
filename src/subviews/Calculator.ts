@@ -73,7 +73,7 @@ class Calculator {
   /**
    * Add event listeners
    */
-  addEventListeners() {
+  addEventListeners(): void {
     document.addEventListener('keydown', this.handleKeyDown);
     document.addEventListener('keyup', this.handleKeyUp);
   }
@@ -81,75 +81,28 @@ class Calculator {
   /**
    * Destroy Calculator Instance
    */
-  destroy() {
+  destroy(): void {
     document.removeEventListener('keydown', this.handleKeyDown);
     document.removeEventListener('keyup', this.handleKeyUp);
     this.el = null;
   }
 
-  // @returns {string}
   /**
-   * Get Calculated Input
-   * @param {string} str - input string
-   * @returns {object} of things
+   * Get Valid Inputs
+   * @param {object} value - object to validate
+   * @returns {boolean} of value
    */
-  getCalculatedInput(str: string = this.input): Record<any, any> {
-    // need a depth count to get how many ending parens.....!!! TODO NEXT
-    const nestedInputs = calcUtil.getInputTreeArray(str);
-
-    // split into separate fn....
-    // !! NESTING NEEDS TO BE PRESERVED!!! for render display
-    const inputGroups = this.getFormattedInputGroups(nestedInputs).reduce((acc, item, i) => [...acc, item, ' '], []).slice(0, -1);
-    let lastLevel = -1;
-    const inputGroups2 = calcUtil.getFormattedInputTree(nestedInputs, (arr, prevArr = [], level) => {
-      // try to manage position.....
-      if (lastLevel < 0) {
-        lastLevel = level;
-      } else {
-        lastLevel = 0;
-      }
-
-      // Auto close parenthesisisisisiis
-      let open = '(';
-      if (level === 1) {
-        open = '';
-      }
-      let close = '';
-      for (let i = 0; i < lastLevel; i++) {
-        close += ')';
-      }
-
-      return [
-        open,
-        ...calcUtil.getInputGroups(arr),
-        close,
-        ...prevArr
-      ];
-    });
-
-    // new total is here
-    const total = calcUtil.getFormattedInputTree(nestedInputs,  (arr, lastCompute = 0) => {
-      const t = calcUtil.getInputGroups(arr);
-      return calcUtil.getTotal(t) + lastCompute;
-    });
-
-    return {
-      input: str,
-      nestedInputs,
-      inputGroups,
-      inputGroups2,
-      inputAsArray: inputGroups,
-      total: _.toStr(total)
-    };
-  }
-
-  getValidInputs(value) {
-    const result = [...BUTTONS, ...GLOBAL_INPUTS].map(o => `${o.value}`).indexOf(`${value}`) > -1;
-    // Return value instead of T/F
+  getValidInputs(value: string | number): boolean {
+    const result = [...BUTTONS, ...GLOBAL_INPUTS].map((o: Record<any, any>) => `${o.value}`).includes(`${value}`);
     return result;
   }
 
-  getTheme(theme) {
+  /**
+   * Get Theme
+   * @param {string} theme - to get
+   * @returns {object} of theme
+   */
+  getTheme(theme: Record<any, any>): Record<any, any> {
     return {
       background: COLOR_PALETTE.GRAY_10,
       // Default Button
@@ -176,12 +129,20 @@ class Calculator {
     };
   }
 
-  handleKeyDown = (e) => {
+  /**
+   * Handle for Key Down
+   * @param {Event} e - keyboard event
+   */
+  handleKeyDown = (e: KeyboardEvent): void => {
     const value = e.key;
     this.triggerInputEvent(value);
   }
 
-  handleKeyUp = (e) => {
+  /**
+   * Handle for Key Up
+   * @param {Event} e - keyboard event
+   */
+  handleKeyUp = (e: KeyboardEvent): void => {
     const value = e.key;
     const validatedInput = this.getValidInputs(value);
 
@@ -191,7 +152,11 @@ class Calculator {
     }
   }
 
-  handleBtnOnClick(value) {
+  /**
+   * Handle Button Click
+   * @param {string} value - value of handler
+   */
+  handleBtnOnClick(value: string): void {
     this.triggerInputEvent(value);
   }
 
@@ -199,19 +164,19 @@ class Calculator {
    * Trigger input event
    * @parma {string} value - value to send
    */
-  triggerInputEvent(value) {
+  triggerInputEvent(value: string): void {
     const validatedInput = this.getValidInputs(value);
 
     if (validatedInput) {
       const btn = this.buttons[value];
       btn.el.style.background = btn.theme.hover;
 
-      switch(value) {
+      switch (value) {
         case 'Backspace':
           this.removeLastInputValue();
           break;
         case 'clear':
-        this.resetInput();
+          this.resetInput();
           break;
         // Calculate Input
         case '=':
@@ -228,7 +193,7 @@ class Calculator {
   /**
    * Reset Input
    */
-  resetInput() {
+  resetInput(): void {
     this.updateInput(DEFAULT_VALUE);
   }
 
@@ -237,7 +202,7 @@ class Calculator {
    * Updates history and input containers
    * @param {string} inputStr - input string to calculate
    */
-  calculate(inputStr: string) {
+  calculate(inputStr: string): void {
     // Update history
     this.renderInputDisplay(
       this.historyEl,
@@ -248,27 +213,19 @@ class Calculator {
     const total = calcUtil.calculateTotal(inputStr);
     this.updateInput(
       total,
-      el => el.innerHTML = calcUtil.formatToDisplayValue(_.toStr(total), 3)
+      el => { el.innerHTML = calcUtil.formatToDisplayValue(_.toStr(total)) }
     );
-  }
-
-  // BROKEN
-  getFormattedInputGroups(nestedInputs) {
-    return calcUtil.getFormattedInputTree(nestedInputs,  (arr, lastCompute = []) => {
-      return [...calcUtil.getInputGroups(arr), ...lastCompute];
-    });
   }
 
   /**
    * Get Input as Display Format
-   * @param {string} inputStr - input stirng
-   * @returns {}
+   * @param {string} inputStr - input string
+   * @returns {array} of inputs
    */
   getInputForDisplay(inputStr: string): string[] {
-    // const test = this.getFormattedInput(inputStr);
     const inputTree = calcUtil.getInputTreeArray(inputStr);
     const formattedTree = calcUtil.formatTree(inputTree);
-    const formatted = formattedTree.map(item => {
+    return formattedTree.map(item => {
       // Strip leading 0's per input group
       if (calcUtil.isNumeric(item)) {
         return `${Number(item)}`;
@@ -276,9 +233,6 @@ class Calculator {
 
       return item;
     });
-    console.log('getInputForDisplay', formatted, formattedTree, inputTree, inputStr);
-    // return formatted.join('');
-    return formatted;
   }
 
   /**
@@ -286,15 +240,15 @@ class Calculator {
    * @param {string|number} value
    * @returns {string} of formatted input
    */
-  getFormattedInput(value: string | number) {
-    let formattedValue = `${value}`;
+  getFormattedInput(value: string | number): string {
+    const formattedValue = `${value}`;
     const lastInput = this.input.slice(-1);
     const nestedInputs = calcUtil.getInputTreeArray(this.input);
     const inputGroups = calcUtil.formatTree(nestedInputs);
-    const lastInputGroup = inputGroups[inputGroups.length-1];
+    const lastInputGroup = inputGroups[inputGroups.length - 1];
 
     // Do not allow more than one decimal per input group
-    if (value === '.' && lastInputGroup.indexOf('.') > -1) {
+    if (value === '.' && lastInputGroup.includes('.')) {
       return this.input;
     }
 
@@ -305,33 +259,35 @@ class Calculator {
     const isLastInputDefault = !calcUtil.isOperator(value) && this.input === DEFAULT_VALUE;
     // Handle Operator
     // update if previous input and new value are both not operator
-    // const lastIsSameOp = calcUtil.isOperator(formattedValue) && (formattedValue === lastInput);
     const lastIsOp = calcUtil.isOperator(formattedValue) && isLastInputOp;
 
     let result;
     if (isLastInputDefault) {
       result = formattedValue;
     } else if (lastIsOp) {
-      result = this.input.slice(0, this.input.length-1) + formattedValue;
+      result = this.input.slice(0, this.input.length - 1) + formattedValue;
     } else {
-
       // filter decimals here......
       result = this.input + formattedValue;
     }
 
     return result;
   }
+
   /**
    * Set Input Value
    * @param {string|number} - input value
    */
-  setInputValue(value: string | number) {
+  setInputValue(value: string | number): void {
     const input = this.input + `${value}`;
     const formattedInput = this.getInputForDisplay(input);
     this.updateInput(input, el => this.renderInputDisplay(el, formattedInput));
   }
 
-  removeLastInputValue() {
+  /**
+   * Remove Last Input Value
+   */
+  removeLastInputValue(): void {
     let newVal = this.input.slice(0, -1);
     newVal = newVal || DEFAULT_VALUE;
     this.updateInput(newVal);
@@ -341,14 +297,13 @@ class Calculator {
    * Update Input and render new display
    * @param {string} input - to set input as
    * @param {function} renderer - how to render input on the display
-   * ....
    */
-  updateInput(input: string, renderer?: (el: Element, input: string) => void) {
+  updateInput(input: string, renderer?: (el: Element, input: string) => void): void {
     this.input = input;
 
     // Update Display
     if (renderer) {
-     renderer(this.inputEl, input);
+      renderer(this.inputEl, input);
     } else {
       this.inputEl.innerHTML = input;
     }
@@ -357,7 +312,7 @@ class Calculator {
   /**
    * Mount Element Instances
    */
-  mountElements() {
+  mountElements(): void {
     // Display Input Element
     this.inputEl = this.renderInputEntry();
 
@@ -372,13 +327,13 @@ class Calculator {
    * Render Buttons on Calculator
    * @returns {array} of HTMLElements
    */
-   renderBtns() {
-     const ITEMS_PER_ROW = 4;
-     const btnEls = [];
+  renderBtns(): any[] {
+    const ITEMS_PER_ROW = 4;
+    const btnEls = [] as any[];
 
-    _.splitToChunks(BUTTONS, ITEMS_PER_ROW).forEach((group, j) => {
+    _.splitToChunks(BUTTONS, ITEMS_PER_ROW).forEach((group: any[], j: number) => {
       btnEls.push(Spawn({
-        children: group.map((btn, i) => {
+        children: group.map((btn: Record<any, any>) => {
           const { label, name, value, ...restProps } = btn;
 
           const spacer = 10;
@@ -392,11 +347,11 @@ class Calculator {
             height = 30;
           }
 
-          let color;
-          let background;
-          let hover;
-          let pressed;
-          let type;
+          let color: string;
+          let background: string;
+          let hover: string;
+          let pressed: string;
+          let type: string;
           // Operator Input
           if (calcUtil.isOperator(value)) {
             type = 'operator';
@@ -406,14 +361,12 @@ class Calculator {
             color = this.theme.buttonAction;
           } else if (value === 'clear') {
             type = 'clear';
-            // background = '#3b0202';
             background = this.theme.buttonClr;
             hover = this.theme.buttonClrHover;
             pressed = this.theme.buttonClrPress;
             color = '#f51515';
           } else if (value === ACTION.EQUALS) {
             type = 'compute';
-            // background = '#5bce09';
             background = this.theme.buttonComp;
             hover = this.theme.buttonCompHover;
             pressed = this.theme.buttonCompPress;
@@ -430,12 +383,12 @@ class Calculator {
           // Attach event handlers
           const events = {
             click: () => this.handleBtnOnClick(value),
-            mouseenter: (e, el) => el.style.background = hover,
-            mousedown: (e, el) => el.style.background = pressed,
-            keydown: (e, el) => el.style.background = pressed,
-            keyup: (e, el) => el.style.background = background,
-            mouseup: (e, el) => el.style.background = hover,
-            mouseleave: (e, el) => el.style.background = background
+            mouseenter: (_e: Event, el: HTMLElement) => { el.style.background = hover },
+            mousedown: (_e: Event, el: HTMLElement) => { el.style.background = pressed },
+            keydown: (_e: Event, el: HTMLElement) => { el.style.background = pressed },
+            keyup: (_e: Event, el: HTMLElement) => { el.style.background = background },
+            mouseup: (_e: Event, el: HTMLElement) => { el.style.background = hover },
+            mouseleave: (_e: Event, el: HTMLElement) => { el.style.background = background }
           };
 
           const btnProps = {
@@ -450,7 +403,7 @@ class Calculator {
               width,
               height,
               cursor: 'pointer',
-              fontFamily: `'Roboto', sans-serif`,
+              fontFamily: "'Roboto', sans-serif",
               // disable IOS dobule tap
               touchAction: 'manipulation'
             },
@@ -484,7 +437,6 @@ class Calculator {
             ...btn
           };
 
-
           return elContainer;
         })
       }));
@@ -495,20 +447,20 @@ class Calculator {
 
   /**
    * Render Input as Pretty Display
-   * @param {HTMLElement} displayEl - el to render the display
+   * @param {Element} displayEl - el to render the display
    * @param {array} inputArray - array to use to render display
    */
-   renderInputDisplay(displayEl: Element, inputArray: string[]) {
+  renderInputDisplay(displayEl: Element, inputArray: any[]): void {
     // Save reference of last used arithmatic
     displayEl.innerHTML = '';
-    inputArray.forEach(item => {
+    inputArray.forEach((item: string) => {
       let el;
       let children = item;
 
       // Render Operator
       if (calcUtil.isOperator(children)) {
         // special format
-        const filter = BUTTONS.filter(z => z.value === children);
+        const filter = BUTTONS.filter((button: Record<any, any>) => button.value === children);
         if (filter.length && filter[0].label) {
           children = filter[0].label.toLowerCase();
         }
@@ -532,7 +484,7 @@ class Calculator {
    * Render History
    * @returns {HTMLElement} of history
    */
-  renderHistoryEntry() {
+  renderHistoryEntry(): HTMLElement {
     return Spawn({
       style: {
         fontSize: 14,
@@ -545,7 +497,7 @@ class Calculator {
    * Render Input Entry
    * @returns {HTMLElement} of input entry
    */
-  renderInputEntry() {
+  renderInputEntry(): HTMLElement {
     const { input } = this.props;
 
     return Spawn({
@@ -558,7 +510,7 @@ class Calculator {
     });
   }
 
-  render() {
+  render(): HTMLElement {
     const { className, style } = this.props;
     // Text Input Style
     const txtStyle = {

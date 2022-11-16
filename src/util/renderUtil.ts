@@ -1,3 +1,5 @@
+/* eslint-disable */
+// TODO: May Remove this file
 import Spawn from '@unfocused/spawn';
 import _ from '@unfocused/treasure-goblin';
 import CONSTANT from './constants';
@@ -78,12 +80,12 @@ export default {
     return result;
   },
   getLastChain: function(chain, level) {
-    const lastItem = chain[chain.length-1];
+    const lastItem = chain[chain.length - 1];
 
     if (level > 0 && Array.isArray(lastItem)) {
       return this.getLastChain(lastItem, level - 1);
     }
 
     return chain;
-  },
+  }
 }

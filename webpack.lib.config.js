@@ -9,7 +9,7 @@ const path = require('path');
 
 module.exports = merge(commonConfig, {
   devServer: {
-    contentBase: './dist',
+    contentBase: './dist'
   },
   entry: './src/export.js',
   devtool: 'inline-source-map',
@@ -17,7 +17,7 @@ module.exports = merge(commonConfig, {
     path: path.resolve(__dirname, 'lib'),
     filename: 'index.js',
     library: {
-      name:'warp-gate',
+      name: 'warp-gate',
       type: 'umd'
     }
   }

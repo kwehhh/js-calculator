@@ -10,20 +10,20 @@ module.exports = {
         test: /\.tsx?$|\.jsx?$/,
         exclude: /node_modules/,
         use: {
-          loader: "babel-loader"
+          loader: 'babel-loader'
         }
       },
       {
         test: /\.s[ac]ss$/i,
         use: [
-          "style-loader",
-          "css-loader",
-          "sass-loader"
+          'style-loader',
+          'css-loader',
+          'sass-loader'
         ],
       },
       {
         test: /\.css$/i,
-        use: ["style-loader", "css-loader"],
+        use: ['style-loader', 'css-loader'],
       },
       {
         test: /\.(woff|woff2|eot|ttf|otf)$/,

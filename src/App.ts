@@ -68,14 +68,12 @@ const { COLOR_PALETTE } = CONSTANT;
  * Add operatiosn for e, pie sin, and deg
  */
 
-
 // TODO
 // key listener
 // colors on operators
 // add instructions on top of calc demo
 // mybe some cool animatiosn
 // more border radius on buttons
-
 
 /**
  * JS Calculator
@@ -93,8 +91,6 @@ const { COLOR_PALETTE } = CONSTANT;
  *  CodePen: https://codepen.io/anthonykoch/pen/xVQOwb?editors=0010
  *   adsd : https://www.freecodecamp.org/news/how-to-build-an-html-calculator-app-from-scratch-using-javascript-4454b8714b98/
  */
-
-
 
 // !! Keep entire file as single for Codepen
 
@@ -137,12 +133,12 @@ export default class App {
                 alignItems: 'center',
                 justifyContent: 'center',
                 borderRadius: '50%',
-                marginRight: 6,
+                marginRight: 6
               }
             }),
             'Calculator'
           ],
-          style:{
+          style: {
             color: COLOR_PALETTE.WHITE_00,
             fontSize: 16,
             display: 'flex',
@@ -151,7 +147,7 @@ export default class App {
         }),
         Spawn({
           children: 'Use keyboard or click buttons to calculate!',
-          style:{
+          style: {
             color: '#dddddd',
             fontSize: 12,
             marginTop: 8,
@@ -172,17 +168,17 @@ export default class App {
                 textDecoration: 'none'
               },
               events: {
-                mouseenter: (e, el) => el.style.color = '#ff3d84',
-                mousedown: (e, el) => el.style.color = '#ff70a5',
-                mouseup: (e, el) => el.style.color = '#ff3d84',
-                mouseleave: (e, el) => el.style.color = '#ff005e'
+                mouseenter: (_e: Event, el: HTMLElement) => { el.style.color = '#ff3d84' },
+                mousedown: (_e: Event, el: HTMLElement) => { el.style.color = '#ff70a5' },
+                mouseup: (_e: Event, el: HTMLElement) => { el.style.color = '#ff3d84' },
+                mouseleave: (_e: Event, el: HTMLElement) => { el.style.color = '#ff005e' }
               }
             })
           ],
-          style:{
+          style: {
             color: '#ffffff',
             fontSize: 12,
-            fontFamily: `'Dancing Script', cursive`,
+            fontFamily: '"Dancing Script", cursive',
             marginTop: 8,
             textAlign: 'center'
           }
@@ -190,13 +186,11 @@ export default class App {
       ]
     });
 
-
     this.renderPageBackground();
     return el;
   }
 
-
-  renderPageBackground() {
+  renderPageBackground(): void {
     // Import External Fonts
     [
       'https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap',
@@ -215,7 +209,7 @@ export default class App {
     // from : https://www.eggradients.com/category/purple-gradient
     document.body.style.backgroundColor = '#a4508b';
     document.body.style.backgroundImage = 'linear-gradient(326deg, #a4508b 0%, #5f0a87 74%)';
-    document.body.style.margin = 0;
-    document.body.style.fontFamily = `'Roboto', sans-serif`;
+    document.body.style.margin = '0';
+    document.body.style.fontFamily = '"Roboto", sans-serif';
   }
 }

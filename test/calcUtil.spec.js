@@ -223,23 +223,6 @@ describe('calcUtil', function () {
     });
   });
 
-  // describe('getFormattedInputTree', () => {
-  //   it('no change', () => {
-  //     const value = calcUtil.getFormattedInputTree(['5', ' ', '+', ' ', '1', '0']);
-  //     expect(value).to.deep.equal(['5', ' ', '+', ' ', '1', '0']);
-  //   });
-  //   it('5', () => {
-  //     const value = calcUtil.getFormattedInputTree(
-  //       ['5', ' ', '+', ' ', '1', '0'],
-  //       (arr, next, i) => {
-  //         return 5;
-  //       }
-  //     );
-
-  //     expect(value).to.equal(5);
-  //   });
-  // });
-
   describe('isOperator', () => {
     it('true', () => {
       const value = calcUtil.isOperator('+');

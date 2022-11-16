@@ -9,7 +9,7 @@ const path = require('path');
 
 module.exports = merge(commonConfig, {
   devServer: {
-    contentBase: './dist',
+    contentBase: './dist'
   },
   entry: './src/index.ts',
   devtool: 'inline-source-map',
